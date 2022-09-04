@@ -1,0 +1,5 @@
+export type { CompareMagnitudes } from './Compare'
+export type { Digit, DigitsPair, OrderedDigits, HeadDigitArray, TailDigitArray } from './Digit'
+export type { DigitwiseAdditiveOp } from './DigitwiseAdditiveOp'
+export type { InsertDecimalPlace } from './InsertDecimalPlace'
+export type { SplitIntoDigits } from './SplitIntoDigits'

@@ -1,0 +1,14 @@
+{
+  "name": "ts-arithmetic",
+  "version": "1.0.0",
+  "description": "Type Level Arithmetic",
+  "author": "Ariel HS",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "tsc": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.2"
+  }
+}
