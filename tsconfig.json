@@ -4,18 +4,13 @@
       "declarationDir": "./build",
       "emitDeclarationOnly": true,
       "declarationMap": true,
-      "esModuleInterop": true,
       "forceConsistentCasingInFileNames": true,
-      "lib": [
-        "esnext",
-        "dom"
-      ],
-      "module": "commonjs",
-      "noEmitOnError": true, /* Do not emit outputs if any type checking errors were reported. */
+      "moduleResolution": "node",
+      "noEmitOnError": true,
       "noErrorTruncation": true, /* Do not truncate error messages. */
       "rootDir": "./src",
       "strict": true,
-      "target": "ES6",
+      "target": "ES2022",
       "types": []
     },
     "include": [

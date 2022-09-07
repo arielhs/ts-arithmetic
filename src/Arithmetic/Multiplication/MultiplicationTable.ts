@@ -1,5 +1,5 @@
 import type { Last } from '../../util'
-import type { _Add } from '../Addition'
+import type { Add } from '../Addition'
 import type { Digit, OrderedDigits, TailDigitArray } from '../Digit'
 import type { OperationResultFromNum } from '../OperationTable'
 
@@ -19,7 +19,7 @@ type MakeMultiplicationRow<N extends Digit, TRow extends number[] = [0]> = (
     TRow['length'] extends 10
         ? TRow
         : Last<TRow> extends infer TPrev extends number
-            ? MakeMultiplicationRow<N, [...TRow, _Add<TPrev, N>]>
+            ? MakeMultiplicationRow<N, [...TRow, Add<TPrev, N>]>
             : never
 )
 

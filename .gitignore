@@ -3,4 +3,4 @@ node_modules
 temp
 tsdoc-metadata.json
 build
-dist
+etc

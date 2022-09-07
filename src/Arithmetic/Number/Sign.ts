@@ -1,21 +1,27 @@
-import type { BitMap } from '../Bit'
-import type { ToNum } from './ToNum'
+import type { BitMap, Not } from '../Bit'
 
 export type Negate<N extends number> = (
     N extends 0 
         ? 0
         : `${N}` extends `-${infer M extends number}`
             ? M
-            : ToNum<`-${N}`>
+            : `-${N}` extends `${infer M extends number}`
+                ? M
+                : never
 )
 
 type Abs<N extends number> = `${N}` extends `-${infer M extends number}` ? M : N
 
-type IsPositive<N extends number> = `${N}` extends `-${number}` ? 0 : 1
+export type IsPositive<N extends number> = `${N}` extends `-${number}` ? 0 : 1
+export type IsNegative<N extends number> = Not<IsPositive<N>>
+
+type IsSignPositiveMap = SignMap<0, 1>
+export type IsSignPositive<S extends Sign> = IsSignPositiveMap[S]
+export type IsSignNegative<S extends Sign> = Not<IsSignPositive<S>>
 
 type GetSign<N extends number> = BitMap<'-', '+'>[IsPositive<N>]
 
-type SignMap<TNegative = unknown, TPositive = unknown> = {
+export type SignMap<TNegative = unknown, TPositive = unknown> = {
     '-': TNegative
     '+': TPositive
 }
@@ -35,3 +41,9 @@ export type SeparateSign<S extends string> = (
 )
 
 export type SignStr<S extends Sign> = S extends '+' ? '' : S
+
+export type FlipSign<S extends Sign> = SignMap<'+', '-'>[S]
+
+type SignMultiplicationMap = SignMap<SignMap<'+', '-'>, SignMap<'-', '+'>>
+
+export type MultiplySigns<S extends Sign, T extends Sign> = SignMultiplicationMap[S][T]

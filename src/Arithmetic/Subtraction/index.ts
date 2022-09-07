@@ -1,1 +1,1 @@
-export { Subtract, _Subtract } from './Subtract'
+export { Subtract, SubtractNumbers, SubtractUnsignedFloats, SubtractUnsignedInts, SubtractSignedInts } from './Subtract'

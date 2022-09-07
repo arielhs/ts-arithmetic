@@ -2,10 +2,33 @@
   "name": "ts-arithmetic",
   "version": "1.0.0",
   "description": "Type Level Arithmetic",
+  "keywords": [
+    "type arithmetic",
+    "type level arithmetic",
+    "type addition",
+    "add",
+    "multiply",
+    "subtract",
+    "minus",
+    "product"
+  ],
+  "homepage": "https://github.com/arielhs/ts-arithmetic",
+  "bugs": {
+    "url": "https://github.com/arielhs/ts-arithmetic/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arielhs/ts-arithmetic.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "types": "dist/ts-arithmetic.d.ts",
   "author": "Ariel HS",
   "license": "MIT",
   "private": true,
   "scripts": {
+    "build": "tsc && api-extractor run --local --typescript-compiler-folder node_modules/typescript/lib",
     "tsc": "tsc"
   },
   "devDependencies": {

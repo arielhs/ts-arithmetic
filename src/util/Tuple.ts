@@ -1,3 +1,5 @@
+import { Stringable } from './String'
+
 export type Last<A extends unknown[]> = A extends [...unknown[], infer TLast] ? TLast : never
 
 type Head<A extends unknown[]> = A extends [...infer THead, unknown] ? THead : never
@@ -24,13 +26,35 @@ type Reject<A extends unknown[], T> = (
         : []
 )
 
-type ArrayOf<TLength extends number, TValue, A extends TValue[] = []> = (
+export type ArrayOf<TLength extends number, TValue, A extends TValue[] = []> = (
     A['length'] extends TLength
         ? A
         : ArrayOf<TLength, TValue, [TValue, ...A]>
 )
 
-type Stringable = string | number | bigint | boolean | null | undefined
+export type SomeElementExtends<A extends unknown[], T> = (
+    A extends [infer H, ...infer R]
+        ? [H] extends [T]
+            ? 1
+            : SomeElementExtends<R, T>
+        : 0
+)
+
+export type RightTruncateTo<A extends unknown[], N extends number> = (
+    A['length'] extends N
+        ? A
+        : A extends [...infer H, infer T]
+            ? RightTruncateTo<H, N>
+            : []
+)
+
+export type SplitLeadingElements<A extends unknown[], T, L extends unknown[] = []> = (
+    A extends [infer H, ...infer R]
+        ? [H] extends [T]
+            ? SplitLeadingElements<R, T, [...L, H]>
+            : [L, A]
+        : [L, []]
+)
 
 export type Join<A extends Stringable[]> = (
     A extends [infer H extends Stringable, ...infer R extends Stringable[]]
@@ -42,6 +66,14 @@ export type LeftTrimTuple<A extends unknown[], T> = (
     A extends [infer H, ...infer R]
         ? [H] extends [T]
             ? LeftTrimTuple<R, T>
+            : A
+        : A
+)
+
+export type RightTrimTuple<A extends unknown[], T> = (
+    A extends [...infer H, infer L]
+        ? [L] extends [T]
+            ? RightTrimTuple<H, T>
             : A
         : A
 )
