@@ -17,10 +17,8 @@ export type SignedInt<TSign extends Sign = Sign, TUnsignedInt extends Digit[] = 
 export type IsIntPositive<X extends SignedInt> = IsSignPositive<X[0]>
 export type IsIntNegative<X extends SignedInt> = IsSignNegative<X[0]>
 
-
 export type NegateSignedInt<X extends SignedInt> = (
     X extends SignedInt<infer TSign, infer TUnsignedInt>
         ? SignedInt<FlipSign<TSign>, TUnsignedInt>
         : never
 )
-

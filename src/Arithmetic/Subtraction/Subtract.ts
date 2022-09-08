@@ -17,7 +17,7 @@ export type SubtractSignedInts<X extends SignedInt, Y extends SignedInt> = (
         : never
 )
 
-type DigitwiseSubtract<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = DigitwiseAdditiveOp<SubtractionTable, TNormalisedX, TNormalisedY, 0>
+type DigitwiseSubtract<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = DigitwiseAdditiveOp<SubtractionTable, TNormalisedX, TNormalisedY>
 
 
 type _SubtractUnsignedFloats<X extends UnsignedFloat, Y extends UnsignedFloat> = (
@@ -51,6 +51,15 @@ type SubtractSignedFloats<X extends SignedFloat, Y extends SignedFloat> = (
 
 export type SubtractNumbers<X extends number, Y extends number> = SignedFloatToNum<SubtractSignedFloats<ToSignedFloat<X>, ToSignedFloat<Y>>>
 
+/**
+ * Perform subtraction on two numeric type literals.
+ * 
+ * @param X - The first operand.
+ * @param Y - The second operand.
+ * @returns X - Y
+ * 
+ * @public
+*/
 export type Subtract<X extends number, Y extends number> = (
     SomeElementExtends<[X, Y], never> extends 1 ? never
     : number extends (X | Y) ? number

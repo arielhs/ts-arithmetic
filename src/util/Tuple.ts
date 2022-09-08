@@ -1,4 +1,4 @@
-import { Stringable } from './String'
+import type { Stringable } from './String'
 
 export type Last<A extends unknown[]> = A extends [...unknown[], infer TLast] ? TLast : never
 
@@ -56,10 +56,10 @@ export type SplitLeadingElements<A extends unknown[], T, L extends unknown[] = [
         : [L, []]
 )
 
-export type Join<A extends Stringable[]> = (
+export type Join<A extends Stringable[], S extends string = ''> = (
     A extends [infer H extends Stringable, ...infer R extends Stringable[]]
-        ? `${H}${Join<R>}`
-        : ''
+        ? Join<R, `${S}${H}`>
+        : S
 )
 
 export type LeftTrimTuple<A extends unknown[], T> = (

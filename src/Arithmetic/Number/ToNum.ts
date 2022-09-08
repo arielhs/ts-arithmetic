@@ -1,11 +1,10 @@
 import type { Sign, SignStr, SignMap } from './Sign'
-import type { ArrayOf, Join, SplitLeadingElements, Trim } from '../../util'
+import type { ArrayOf, Join, SplitLeadingElements } from '../../util'
 import type { Digit, FloatDigitCount, FloatMaxDigits, FloatMaxDigitsAsUnsignedFloat, HeadDigitArray, MakeSignedFloat, SignedFloat, TailDigitArray, UnsignedFloat } from '../Digit'
 import type { _Compare } from './Compare'
 import type { ToUnsignedFloat } from './ToFloat'
 import type { SubtractUnsignedFloats } from '../Subtraction'
 import type { AddUnsignedInts } from '../Addition'
-
 
 type InferNum<S extends string, TSign extends Sign> = (
     S extends '0'

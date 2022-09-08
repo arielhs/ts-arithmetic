@@ -24,7 +24,4 @@ export type Normalise<X extends UnsignedFloat, Y extends UnsignedFloat> = (
     : never
 )
 
-
-
-
 export type NormaliseIntPartLengths<X extends Digit[], Y extends Digit[]> = NormaliseLengths<X, Y, 'L', 0>

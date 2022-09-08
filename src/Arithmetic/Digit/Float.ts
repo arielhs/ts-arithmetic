@@ -1,4 +1,5 @@
-import type { FlipSign, IsSignNegative, IsSignPositive, Sign, ToUnsignedFloat } from '../Number'
+import type { LeftPad } from '../../util'
+import type { FlipSign, IsSignNegative, IsSignPositive, Sign, ToUnsignedFloat, _Compare } from '../Number'
 import type { Digit, HeadDigitArray, SignedInt } from './Digit'
 import type { NormaliseFractionalZeros, NormaliseIntZeros } from './Normalise'
 
@@ -53,6 +54,12 @@ export type DigitsToUnsignedFloat<X extends Digit[], TDecimalPlaces extends numb
         : X extends HeadDigitArray<infer XHead, infer XLast>
             ? DigitsToUnsignedFloat<XHead, TDecimalPlaces, [XLast, ...TFractionalDigits]>
             : never
+)
+
+export type SafeDigitsToUnsignedFloat<X extends Digit[], TDecimalPlaces extends number, TFractionalDigits extends Digit[] = []> = (
+    _Compare<X['length'], TDecimalPlaces> extends -1
+        ? DigitsToUnsignedFloat<LeftPad<X, 0, TDecimalPlaces>, TDecimalPlaces>
+        : DigitsToUnsignedFloat<X, TDecimalPlaces>
 )
 
 export type NegateSignedFloat<X extends SignedFloat> = (

@@ -1,6 +1,10 @@
+/*
+
+// only way to get VSCode intellisense to ignore this file, since its so heavy duty it causes lag
+
 import type { Add } from './Addition'
-import { Divide } from './Division'
-import { Pow } from './Exponentiation'
+import type { Divide, Mod } from './Division'
+import type { Pow } from './Exponentiation'
 import type { Multiply } from './Multiplication'
 import type { Subtract } from './Subtraction'
 
@@ -176,34 +180,28 @@ type Tests = [
     Test<ApplyTest<Pow<0, number>, never>>,
     Test<ApplyTest<Pow<0, never>, never>>,
     Test<ApplyTest<Pow<never, 0>, never>>,
+
+    Test<ApplyTest<Mod<10, 5>, 0>>,
+    Test<ApplyTest<Mod<19, 7>, 5>>,
+    Test<ApplyTest<Mod<12312323, 1>, 0>>,
+    Test<ApplyTest<Mod<0, 123232>, 0>>,
+    Test<ApplyTest<Mod<7, 19>, 7>>,
+    Test<ApplyTest<Mod<-7, 19>, -7>>,
+    Test<ApplyTest<Mod<-19, 7>, -5>>,
+    Test<ApplyTest<Mod<19, -7>, 5>>,
+    Test<ApplyTest<Mod<19.99, 7.1>, 5.79>>,
+    Test<ApplyTest<Mod<12345.6789, 0.555454>, 0.158296>>,
+
+    Test<ApplyTest<Mod<2121, 0>, never>>,
+    Test<ApplyTest<Mod<number, 1>, 0>>,
+    Test<ApplyTest<Mod<number, 0>, never>>,
+    Test<ApplyTest<Mod<number, number>, number>>,
+    Test<ApplyTest<Mod<5, never>, never>>,
+    Test<ApplyTest<Mod<never, 5>, never>>,
+    Test<ApplyTest<Mod<never, never>, never>>,
+    Test<ApplyTest<Mod<0, number>, 0>>,
+    Test<ApplyTest<Mod<0, never>, never>>,
+    Test<ApplyTest<Mod<never, 0>, never>>,
 ]
 
-
-
-// Example of avoiding "type instantiation is excessively deep or possibly infinite" error with unwind
-// type Unwind<TValue> = {
-//     value: TValue
-//     _unwind: true
-// }
-
-// type _StringLength<S extends string, TCount extends number = 0> = (
-//     S extends ''
-//         ? TCount
-//         : TCount extends 500
-//             ? Unwind<[S, TCount]>
-//             : S extends `${infer H}${infer R}`
-//                 ? _StringLength<R, Add<TCount, 1>>
-//                 : never
-
-// )
-// type StringLength<S extends string, TAccCount extends number = 0> = (
-//     _StringLength<S> extends infer R
-//         ? R extends Unwind<[infer SS extends string, infer TCount extends number]>
-//             ? StringLength<SS, Add<TAccCount, TCount>>
-//             : R extends number
-//                 ? Add<TAccCount, R>
-//                 : never
-//         : never
-// )
-
-// type Test6253 = StringLength<'1234567890' | ''>
+*/

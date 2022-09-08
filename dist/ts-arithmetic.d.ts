@@ -1,5 +1,19 @@
 /**
- * Add two numeric type literals
+ * Get the absolute value of a numeric literal
+ *
+ * @param N - The number to get the absolute value of.
+ * @returns N as a positive number.
+ *
+ * @public
+ */
+export declare type Abs<N extends number> = `${N}` extends `-${infer M extends number}` ? M : N;
+
+/**
+ * Add two numeric type literals.
+ *
+ * @param X - The first operand.
+ * @param Y - The second operand.
+ * @returns X + Y
  *
  * @public
  */
@@ -33,20 +47,43 @@ declare type AddUnsignedFloats<X extends UnsignedFloat, Y extends UnsignedFloat>
 
 declare type AddUnsignedInts<X extends Digit[], Y extends Digit[]> = (NormaliseIntPartLengths<X, Y> extends DigitsPair<infer TNormalisedX, infer TNormalisedY> ? DigitwiseAdd<TNormalisedX, TNormalisedY> : never);
 
+/**
+ * Perform an AND operation on two Bit literals.
+ *
+ * @param A - The first operand.
+ * @param B - The second operand.
+ * @returns Bit - (A & B)
+ *
+ * @public
+ */
 export declare type And<A extends Bit, B extends Bit> = AndMap[A][B];
 
 declare type AndMap = TwoBitMap<[0, 0, 0, 1]>;
 
 declare type ArrayOf<TLength extends number, TValue, A extends TValue[] = []> = (A['length'] extends TLength ? A : ArrayOf<TLength, TValue, [TValue, ...A]>);
 
-declare type Bit = 0 | 1;
+/**
+ * Used to represent true or false, but can be used to key into objects/tuples.
+ *
+ * @public
+ */
+export declare type Bit = 0 | 1;
 
 declare type BitMap<TFalse = unknown, TTrue = unknown> = {
     0: TFalse;
     1: TTrue;
 };
 
-export declare type Compare<X extends number, Y extends number> = (SomeElementExtends<[X, Y], never> extends 0 ? number extends (X | Y) ? ComparisonResult : X extends X ? Y extends Y ? _Compare<X, Y> : never : never : never);
+/**
+ * Compare two numeric type literals.
+ *
+ * @param X - The number on the "left".
+ * @param Y - The number on the "right".
+ * @returns (-1 | 0 | 1) - (-1 if X is less than Y, 1 if X is greater than Y, 0 if X === Y).
+ *
+ * @public
+ */
+export declare type Compare<X extends number, Y extends number> = (SomeElementExtends<[X, Y], never> extends 1 ? never : number extends (X | Y) ? ComparisonResult : X extends X ? Y extends Y ? _Compare<X, Y> : never : never);
 
 declare type _Compare<X extends number, Y extends number> = (SignDecisionBranch<X, Y, {
     '-': {
@@ -75,10 +112,10 @@ declare type CompareNumberMagnitudes<X extends number, Y extends number> = (Spli
 
 declare type ComparisonResult = -1 | 0 | 1;
 
-declare type CrossMultiply<X extends Digit[], Y extends Digit[], TShift extends 0[] = []> = (Y extends HeadDigitArray<infer YHead, infer B> ? NormaliseIntZeros<AddUnsignedInts<[
+declare type CrossMultiply<X extends Digit[], Y extends Digit[], TShift extends 0[] = [], TPrevRowResult extends Digit[] = []> = (Y extends HeadDigitArray<infer YHead, infer B> ? CrossMultiply<X, YHead, [...TShift, 0], NormaliseIntZeros<AddUnsignedInts<TPrevRowResult, [
 ...MultiplyRow<X, B>,
 ...TShift
-], CrossMultiply<X, YHead, [...TShift, 0]>>> : []);
+]>>> : TPrevRowResult);
 
 declare type DecomposeNum<S extends string | number> = (SeparateSign<`${S}`> extends [infer TSign extends Sign, infer M extends string] ? SplitIntAndFractionParts<ScientificNotationAsDecimal<M>> extends NumComponents<never, infer I, infer F> ? NumComponents<TSign, TrimLeadingZeros<I>, TrimTrailingZeros<F>> : never : never);
 
@@ -88,35 +125,44 @@ declare type DigitsPair<TDigits1 extends Digit[], TDigits2 extends Digit[]> = [T
 
 declare type DigitsToUnsignedFloat<X extends Digit[], TDecimalPlaces extends number, TFractionalDigits extends Digit[] = []> = (TFractionalDigits['length'] extends TDecimalPlaces ? MakeUnsignedFloat<X, TFractionalDigits> : X extends HeadDigitArray<infer XHead, infer XLast> ? DigitsToUnsignedFloat<XHead, TDecimalPlaces, [XLast, ...TFractionalDigits]> : never);
 
-declare type DigitwiseAdd<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = DigitwiseAdditiveOp<AdditionTable, TNormalisedX, TNormalisedY, 0>;
+declare type DigitwiseAdd<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = DigitwiseAdditiveOp<AdditionTable, TNormalisedX, TNormalisedY>;
 
-declare type DigitwiseAdditiveOp<TTable extends AdditiveOperationTable, X extends Digit[], Y extends Digit[], TCarryIn extends Bit = 0> = ([
+declare type DigitwiseAdditiveOp<TTable extends AdditiveOperationTable, X extends Digit[], Y extends Digit[], TCarryIn extends Bit = 0, TFinalResult extends Digit[] = []> = ([
 X,
 Y
-] extends [HeadDigitArray<infer XHead, infer A>, HeadDigitArray<infer YHead, infer B>] ? TTable[TCarryIn][A] extends AdditiveOperationResult<infer TCarryOut1, infer AAndCarryIn> ? TTable[B][AAndCarryIn] extends AdditiveOperationResult<infer TCarryOut2, infer TResult> ? [
-...DigitwiseAdditiveOp<TTable, XHead, YHead, Or<TCarryOut1, TCarryOut2>>,
-TResult
-] : never : never : [TCarryIn]);
+] extends [HeadDigitArray<infer XHead, infer A>, HeadDigitArray<infer YHead, infer B>] ? TTable[TCarryIn][A] extends AdditiveOperationResult<infer TCarryOut1, infer AAndCarryIn> ? TTable[B][AAndCarryIn] extends AdditiveOperationResult<infer TCarryOut2, infer TResult> ? DigitwiseAdditiveOp<TTable, XHead, YHead, Or<TCarryOut1, TCarryOut2>, [TResult, ...TFinalResult]> : never : never : [TCarryIn, ...TFinalResult]);
 
-declare type DigitwiseSubtract<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = DigitwiseAdditiveOp<SubtractionTable, TNormalisedX, TNormalisedY, 0>;
+declare type DigitwiseSubtract<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = DigitwiseAdditiveOp<SubtractionTable, TNormalisedX, TNormalisedY>;
 
+/**
+ * Divide two numeric type literals.
+ *
+ * @param TNumerator - The numerator (a.k.a dividend)
+ * @param TDivisor - The divisor (a.k.a denominator)
+ * @returns TNumerator / TDivisor
+ *
+ * @public
+ */
 export declare type Divide<TNumerator extends number, TDivisor extends number> = (SomeElementExtends<[TNumerator, TDivisor], never> extends 1 ? never : TDivisor extends 0 ? never : TNumerator extends 0 ? 0 : TDivisor extends 1 ? TNumerator : number extends (TNumerator | TDivisor) ? number : TDivisor extends -1 ? Negate<TNumerator> : DivideNumbers<TNumerator, TDivisor>);
 
 declare type DivideMaxDigits = 13;
 
 declare type DivideNumbers<TNumerator extends number, TDivisor extends number> = SignedFloatToNum<DivideSignedFloats<ToSignedFloat<TNumerator>, ToSignedFloat<TDivisor>>>;
 
-declare type DivideSignedFloats<TNumerator extends SignedFloat, TDivisor extends SignedFloat> = (TNumerator extends SignedFloat<infer NSign, infer N> ? TDivisor extends SignedFloat<infer DSign, infer D> ? SignedFloat<MultiplySigns<NSign, DSign>, DivideUnsignedFloats<N, D>> : never : never);
+declare type DivideSignedFloats<TNumerator extends SignedFloat, TDivisor extends SignedFloat> = (TNumerator extends SignedFloat<infer NSign, infer N> ? TDivisor extends SignedFloat<infer DSign, infer D> ? SignedFloat<MultiplySigns<NSign, DSign>, DivideUnsignedFloats<N, D>[0]> : never : never);
 
-declare type DivideUnsignedFloats<TNumerator extends UnsignedFloat, TDivisor extends UnsignedFloat> = (Normalise<TNumerator, TDivisor> extends [...DigitsPair<infer N, infer D>, number] ? LongDivide<N, D> : never);
+declare type DivideUnsignedFloats<TNumerator extends UnsignedFloat, TDivisor extends UnsignedFloat, TWithRemainder extends boolean = false> = (Normalise<TNumerator, TDivisor> extends [...DigitsPair<infer N, infer D>, infer TDecimalPlaces] ? N extends TailDigitArray<infer TNumeratorHead, infer TNumeratorTail> ? [
+LongDivide<D, [TNumeratorHead], TNumeratorTail, [], TWithRemainder>,
+TDecimalPlaces
+] : never : never);
 
 declare type EmptryStringAsZero<S extends string> = S extends '' ? '0' : S;
 
-declare type EuclideanDivide<TNumerator extends Digit[], TDivisor extends Digit[]> = (_EuclideanDivide<TDivisor, TNumerator, [0]>);
+declare type EuclideanDivide<TNumerator extends Digit[], TDivisor extends Digit[]> = _EuclideanDivide<TDivisor, TNumerator, [0]>;
 
-declare type _EuclideanDivide<TDivisor extends Digit[], TRemainder extends Digit[], TQuotient extends Digit[]> = (CompareIntMagnitudes<TRemainder, TDivisor> extends (1 | 0) ? _EuclideanDivide<TDivisor, SubtractUnsignedInts<TRemainder, TDivisor>, AddUnsignedInts<TQuotient, [1]>> : [NormaliseIntZeros<TRemainder>, NormaliseIntZeros<TQuotient>]);
+declare type _EuclideanDivide<TDivisor extends Digit[], TRemainder extends Digit[], TQuotient extends Digit[]> = (CompareIntMagnitudes<TRemainder, TDivisor> extends (1 | 0) ? _EuclideanDivide<TDivisor, SubtractUnsignedInts<TRemainder, TDivisor>, AddUnsignedInts<TQuotient, [1]>> : MakeModResult<TRemainder, TQuotient>);
 
-declare type EuclideanDivideResult<TRemainder extends Digit[], TQuotient extends Digit> = DigitsPair<TRemainder, [TQuotient]>;
+declare type EuclideanDivideResult<TRemainder extends Digit[], TQuotient extends Digit> = ModResult<TRemainder, [TQuotient]>;
 
 declare type Exponentiate<X extends number, N extends number> = (N extends 0 ? 1 : IsNegative<N> extends 1 ? Exponentiate<Divide<1, X>, Negate<N>> : IsEven<N> extends 1 ? Exponentiate<Multiply<X, X>, Divide<N, 2>> : Exponentiate<Multiply<X, X>, Divide<Subtract<N, 1>, 2>> extends infer XX extends number ? Multiply<X, XX> : never);
 
@@ -143,23 +189,73 @@ declare type HeadDigitArray<THead extends Digit[], TLast extends Digit> = [...TH
 
 declare type InferNum<S extends string, TSign extends Sign> = (S extends '0' ? 0 : `${SignStr<TSign>}${S}` extends `${infer N extends number}` ? N : never);
 
+declare type IntConstraint<N extends number> = IsInt<N> extends 1 ? number : never;
+
+/**
+ * Checks if a numeric type literal is Even.
+ *
+ * @param N - The number to check.
+ * @returns Bit - (i.e. 1 if N is Even, 0 if N is Odd. Returns never if N is has a non-zero fractional component).
+ *
+ * @public
+ */
 export declare type IsEven<N extends number> = IsUnsignedFloatEven<ToUnsignedFloat<N>>;
 
+/**
+ * Checks if a numeric type literal is an Integer.
+ *
+ * @param N - The number to check.
+ * @returns Bit - (i.e. 1 if N is an Integer, 0 if N has a non-zero fractional component).
+ *
+ * @public
+ */
 export declare type IsInt<N extends number> = (`${N}` extends `${string}.${string}` ? 0 : 1);
 
 declare type IsIntEven<D extends Digit[]> = (D extends HeadDigitArray<any, infer TLastDigit> ? TLastDigit extends (0 | 2 | 4 | 6 | 8) ? 1 : 0 : never);
 
+/**
+ * Check if a numeric literal is negative.
+ *
+ * @param N - The number to check.
+ * @returns Bit (i.e. 1 if N is negative, 0 if N is positive).
+ *
+ * @public
+ */
 export declare type IsNegative<N extends number> = Not<IsPositive<N>>;
 
+/**
+ * Checks if a numeric type literal is not an Integer.
+ *
+ * @param N - The number to check.
+ * @returns Bit - (i.e. 1 if N has a non-zero fractional component, 0 if N is an Integer).
+ *
+ * @public
+ */
 export declare type IsNotInt<N extends number> = Not<IsInt<N>>;
 
+/**
+ * Checks if a numeric type literal is Odd.
+ *
+ * @param N - The number to check.
+ * @returns Bit - (i.e. 1 if N is Odd, 0 if N is Even. Returns never if N is has a non-zero fractional component).
+ *
+ * @public
+ */
 export declare type IsOdd<N extends number> = Not<IsEven<N>>;
 
+/**
+ * Check if a numeric literal is positive.
+ *
+ * @param N - The number to check.
+ * @returns Bit (i.e. 1 if N is positive, 0 if N is negative).
+ *
+ * @public
+ */
 export declare type IsPositive<N extends number> = `${N}` extends `-${number}` ? 0 : 1;
 
 declare type IsUnsignedFloatEven<F extends UnsignedFloat> = (F[1] extends [] ? IsIntEven<F[0]> : never);
 
-declare type Join<A extends Stringable[]> = (A extends [infer H extends Stringable, ...infer R extends Stringable[]] ? `${H}${Join<R>}` : '');
+declare type Join<A extends Stringable[], S extends string = ''> = (A extends [infer H extends Stringable, ...infer R extends Stringable[]] ? Join<R, `${S}${H}`> : S);
 
 declare type Last<A extends unknown[]> = A extends [...unknown[], infer TLast] ? TLast : never;
 
@@ -167,15 +263,15 @@ declare type LeftPad<A extends unknown[], V, N extends number> = (A['length'] ex
 
 declare type LeftTrimTuple<A extends unknown[], T> = (A extends [infer H, ...infer R] ? [H] extends [T] ? LeftTrimTuple<R, T> : A : A);
 
-declare type LongDivide<TNumerator extends Digit[], TDivisor extends Digit[]> = (TNumerator extends TailDigitArray<infer TNumeratorHead, infer TNumeratorTail> ? _LongDivide<TDivisor, [TNumeratorHead], TNumeratorTail> : never);
-
-declare type _LongDivide<TDivisor extends Digit[], TNumeratorHead extends Digit[], TNumeratorTail extends Digit[], TQuotient extends Digit[] = [], TIntegerDivision extends boolean = false> = (EuclideanDivide<TNumeratorHead, TDivisor> extends EuclideanDivideResult<infer TRemainder, infer TNextQuotientDigit> ? [...TQuotient, TNextQuotientDigit] extends infer TNextQuotient extends Digit[] ? TNumeratorTail extends TailDigitArray<infer TNextDigit, infer TNextTail> ? _LongDivide<TDivisor, [...TRemainder, TNextDigit], TNextTail, TNextQuotient, TIntegerDivision> : TIntegerDivision extends false ? MakeUnsignedFloat<TNextQuotient, TRemainder extends [0] ? [] : LongDivideFraction<TDivisor, [...TRemainder, 0]>> : [NormaliseIntZeros<TRemainder>, NormaliseIntZeros<TNextQuotient>] : never : never);
+declare type LongDivide<TDivisor extends Digit[], TNumeratorHead extends Digit[], TNumeratorTail extends Digit[], TQuotient extends Digit[] = [], TWithRemainder extends boolean = false> = (EuclideanDivide<TNumeratorHead, TDivisor> extends EuclideanDivideResult<infer TRemainder, infer TNextQuotientDigit> ? [...TQuotient, TNextQuotientDigit] extends infer TNextQuotient extends Digit[] ? TNumeratorTail extends TailDigitArray<infer TNextDigit, infer TNextTail> ? LongDivide<TDivisor, [...TRemainder, TNextDigit], TNextTail, TNextQuotient, TWithRemainder> : TWithRemainder extends false ? MakeUnsignedFloat<TNextQuotient, TRemainder extends [0] ? [] : LongDivideFraction<TDivisor, [...TRemainder, 0]>> : MakeModResult<TRemainder, TNextQuotient> : never : never);
 
 declare type LongDivideFraction<TDivisor extends Digit[], TNumerator extends Digit[], TQuotient extends Digit[] = []> = (_Compare<TQuotient['length'], DivideMaxDigits> extends 1 ? TQuotient : EuclideanDivide<TNumerator, TDivisor> extends EuclideanDivideResult<infer TRemainder, infer TNextQuotientDigit> ? TRemainder extends [0] ? [...TQuotient, TNextQuotientDigit] : LongDivideFraction<TDivisor, [...TRemainder, 0], [...TQuotient, TNextQuotientDigit]> : never);
 
 declare type MakeAdditionTable<T extends unknown[]> = (T['length'] extends 10 ? T : MakeAdditionTable<[...T, RotateLeftWithCarry<Last<T>>]>);
 
 declare type MakeFirstRow<A extends AdditiveOperationResult[]> = (A['length'] extends Digit ? MakeFirstRow<[...A, AdditiveOperationResult<0, A['length']>]> : A);
+
+declare type MakeModResult<TRemainder extends Digit[], TQuotient extends Digit[]> = ModResult<NormaliseIntZeros<TRemainder>, NormaliseIntZeros<TQuotient>>;
 
 declare type MakeMultiplicationRow<N extends Digit, TRow extends number[] = [0]> = (TRow['length'] extends 10 ? TRow : Last<TRow> extends infer TPrev extends number ? MakeMultiplicationRow<N, [...TRow, Add<TPrev, N>]> : never);
 
@@ -191,23 +287,59 @@ declare type MapToOperationResult<TRow extends number[]> = {
     [K in keyof TRow]: OperationResultFromNum<TRow[K]>;
 };
 
+/**
+ * Mod two numeric type literals. This returns the remainder as per JavaScript's Remainder (%) operator.
+ *
+ * @param TNumerator - The numerator (a.k.a dividend)
+ * @param TDivisor - The divisor (a.k.a denominator)
+ * @returns TNumerator % TDivisor
+ *
+ * @public
+ */
+export declare type Mod<TNumerator extends number, TDivisor extends number> = (SomeElementExtends<[TNumerator, TDivisor], never> extends 1 ? never : TDivisor extends 0 ? never : TNumerator extends 0 ? 0 : TDivisor extends 1 ? 0 : number extends (TNumerator | TDivisor) ? number : ModNumbers<TNumerator, TDivisor>);
+
+declare type ModNumbers<TNumerator extends number, TDivisor extends number> = SignedFloatToNum<ModSignedFloats<ToSignedFloat<TNumerator>, ToSignedFloat<TDivisor>>>;
+
+declare type ModResult<TRemainder extends Digit[], TQuotient extends Digit[]> = [
+remainder: TRemainder,
+quotient: TQuotient
+];
+
+declare type ModSignedFloats<TNumerator extends SignedFloat, TDivisor extends SignedFloat> = (TNumerator extends SignedFloat<infer NSign, infer N> ? TDivisor extends SignedFloat<Sign, infer D> ? SignedFloat<NSign, ModUnsignedFloats<N, D>> : never : never);
+
+declare type ModUnsignedFloats<TNumerator extends UnsignedFloat, TDivisor extends UnsignedFloat> = (DivideUnsignedFloats<TNumerator, TDivisor, true> extends [ModResult<infer TRemainder, infer TQuotient>, infer TDecimalPlaces extends number] ? SafeDigitsToUnsignedFloat<TRemainder, TDecimalPlaces> : never);
+
 declare type MultiplicationTable = MakeMultiplicationTable<[], OrderedDigits>;
 
+/**
+ * Multiply two numeric type literals.
+ *
+ * @param X - The first operand.
+ * @param Y - The second operand.
+ * @returns X * Y
+ *
+ * @public
+ */
 export declare type Multiply<X extends number, Y extends number> = (SomeElementExtends<[X, Y], never> extends 1 ? never : X extends 0 ? 0 : Y extends 0 ? 0 : X extends 1 ? Y : Y extends 1 ? X : number extends (X | Y) ? number : X extends -1 ? Negate<Y> : Y extends -1 ? Negate<X> : MultiplyNumbers<X, Y>);
 
 declare type MultiplyNumbers<X extends number, Y extends number> = SignedFloatToNum<MultiplySignedFloats<ToSignedFloat<X>, ToSignedFloat<Y>>>;
 
-declare type MultiplyRow<X extends Digit[], B extends Digit, TCarryIn extends Digit = 0> = (X extends HeadDigitArray<infer XHead, infer A> ? MultiplicationTable[A][B] extends OperationResult<infer TCarryOut1, infer TResult1> ? AdditionTable[TResult1][TCarryIn] extends AdditiveOperationResult<infer TCarryOut2, infer TFinalResult> ? AdditionTable[TCarryOut1][TCarryOut2] extends AdditiveOperationResult<0, infer TFinalCarryOut> ? [
-...MultiplyRow<XHead, B, TFinalCarryOut>,
-TFinalResult
-] : never : never : never : [TCarryIn]);
+declare type MultiplyRow<X extends Digit[], B extends Digit, TCarryIn extends Digit = 0, TFinalResult extends Digit[] = []> = (X extends HeadDigitArray<infer XHead, infer A> ? MultiplicationTable[A][B] extends OperationResult<infer ATimesBCarryOut, infer ATimesB> ? AdditionTable[ATimesB][TCarryIn] extends AdditiveOperationResult<infer TCarryOut2, infer TResult> ? AdditionTable[ATimesBCarryOut][TCarryOut2] extends AdditiveOperationResult<0, infer TFinalCarryOut> ? MultiplyRow<XHead, B, TFinalCarryOut, [TResult, ...TFinalResult]> : never : never : never : [TCarryIn, ...TFinalResult]);
 
 declare type MultiplySignedFloats<X extends SignedFloat, Y extends SignedFloat> = (X extends SignedFloat<infer XSign, infer XUnsignedFloat> ? Y extends SignedFloat<infer YSign, infer YUnsignedFloat> ? SignedFloat<MultiplySigns<XSign, YSign>, MultiplyUnsignedFloats<XUnsignedFloat, YUnsignedFloat>> : never : never);
 
 declare type MultiplySigns<S extends Sign, T extends Sign> = SignMultiplicationMap[S][T];
 
-declare type MultiplyUnsignedFloats<X extends UnsignedFloat, Y extends UnsignedFloat> = (NormaliseForCrossMultiply<X, Y> extends [...DigitsPair<infer TNormalisedX, infer TNormalisedY>, infer TDecimalPlaces extends number] ? CrossMultiply<TNormalisedX, TNormalisedY> extends infer TResult extends Digit[] ? _Compare<TResult['length'], TDecimalPlaces> extends -1 ? DigitsToUnsignedFloat<LeftPad<TResult, 0, TDecimalPlaces>, TDecimalPlaces> : DigitsToUnsignedFloat<TResult, TDecimalPlaces> : never : never);
+declare type MultiplyUnsignedFloats<X extends UnsignedFloat, Y extends UnsignedFloat> = (NormaliseForCrossMultiply<X, Y> extends [...DigitsPair<infer TNormalisedX, infer TNormalisedY>, infer TDecimalPlaces extends number] ? SafeDigitsToUnsignedFloat<CrossMultiply<TNormalisedX, TNormalisedY>, TDecimalPlaces> : never);
 
+/**
+ * Negate a numeric literal
+ *
+ * @param N - The number to negate.
+ * @returns -N
+ *
+ * @public
+ */
 export declare type Negate<N extends number> = (N extends 0 ? 0 : `${N}` extends `-${infer M extends number}` ? M : `-${N}` extends `${infer M extends number}` ? M : never);
 
 declare type NegateSignedFloat<X extends SignedFloat> = (X extends SignedFloat<infer TSign, infer TUnsignedFloat> ? SignedFloat<FlipSign<TSign>, TUnsignedFloat> : never);
@@ -232,6 +364,14 @@ declare type NormaliseIntZeros<X extends Digit[]> = (LeftTrimTuple<X, 0> extends
 
 declare type NormaliseLengths<A extends unknown[], B extends unknown[], D extends PadDirection, TPadValue> = (CompareLengths<A, B> extends 0 | -1 ? [Pad<D, A, TPadValue, B['length']>, B] : [A, Pad<D, B, TPadValue, A['length']>]);
 
+/**
+ * Perform an NOT operation on a Bit literals.
+ *
+ * @param B - The operand to NOT.
+ * @returns Bit - (~B)
+ *
+ * @public
+ */
 export declare type Not<B extends Bit> = NotMap[B];
 
 declare type NotMap = BitMap<1, 0>;
@@ -248,6 +388,15 @@ declare type OperationResult<C extends Digit = Digit, R extends Digit = Digit> =
 
 declare type OperationResultFromNum<N extends number> = (`${N}` extends `${infer C extends Digit}${infer R extends Digit}` ? OperationResult<C, R> : `${N}` extends `${infer R extends Digit}` ? OperationResult<0, R> : never);
 
+/**
+ * Perform an OR operation on two Bit literals.
+ *
+ * @param A - The first operand.
+ * @param B - The second operand.
+ * @returns Bit - (A | B)
+ *
+ * @public
+ */
 export declare type Or<A extends Bit, B extends Bit> = OrMap[A][B];
 
 declare type OrderedDigits = NumsUpto<10>;
@@ -261,7 +410,16 @@ declare type Pad<D extends PadDirection, A extends unknown[], V, N extends numbe
 
 declare type PadDirection = 'L' | 'R';
 
-export declare type Pow<X extends number, N extends IsInt<N> extends 1 ? number : never> = (SomeElementExtends<[X, N], never> extends 1 ? never : IsInt<N> extends 0 ? never : N extends 0 ? 1 : X extends 1 ? 1 : X extends 0 ? IsNegative<N> extends 1 ? never : number extends N ? never : 0 : number extends (X | N) ? number : Exponentiate<X, N>);
+/**
+ * Raise a numeric literal to the power of another.
+ *
+ * @param X - The base.
+ * @param N - The exponent (a.k.a power). Must be an Integer.
+ * @returns X^N
+ *
+ * @public
+ */
+export declare type Pow<X extends number, N extends IntConstraint<N>> = (SomeElementExtends<[X, N], never> extends 1 ? never : IsInt<N> extends 0 ? never : N extends 0 ? 1 : X extends 1 ? 1 : X extends 0 ? IsNegative<N> extends 1 ? never : number extends N ? never : 0 : number extends (X | N) ? number : Exponentiate<X, N>);
 
 declare type Reject<A extends unknown[], T> = (A extends [infer H, ...infer R] ? [H] extends [T] ? Reject<R, T> : [H, ...Reject<R, T>] : []);
 
@@ -284,6 +442,8 @@ declare type RoundingCarryMap = SignMap<[
 ...ArrayOf<5, 0>,
 ...ArrayOf<5, 1>
 ]>;
+
+declare type SafeDigitsToUnsignedFloat<X extends Digit[], TDecimalPlaces extends number, TFractionalDigits extends Digit[] = []> = (_Compare<X['length'], TDecimalPlaces> extends -1 ? DigitsToUnsignedFloat<LeftPad<X, 0, TDecimalPlaces>, TDecimalPlaces> : DigitsToUnsignedFloat<X, TDecimalPlaces>);
 
 declare type ScientificNotationAsDecimal<N extends string | number> = (`${N}` extends `${infer TSignificand extends number}e-${infer TExp extends number}` ? SplitIntAndFractionParts<TSignificand> extends NumComponents<never, infer I, infer F> ? ArrayOf<TExp, 0> extends [infer TIntZero extends 0, ...infer TFractionZeros extends 0[]] ? Join<[TIntZero, '.', ...TFractionZeros, I, F]> : never : never : `${N}`);
 
@@ -325,6 +485,15 @@ declare type SplitLeadingElements<A extends unknown[], T, L extends unknown[] = 
 
 declare type Stringable = string | number | bigint | boolean | null | undefined;
 
+/**
+ * Perform subtraction on two numeric type literals.
+ *
+ * @param X - The first operand.
+ * @param Y - The second operand.
+ * @returns X - Y
+ *
+ * @public
+ */
 export declare type Subtract<X extends number, Y extends number> = (SomeElementExtends<[X, Y], never> extends 1 ? never : number extends (X | Y) ? number : X extends 0 ? Negate<Y> : Y extends 0 ? X : SubtractNumbers<X, Y>);
 
 declare type SubtractionTable = MakeSubtractionTable<[FirstAdditiveResultRow]>;
@@ -379,6 +548,15 @@ declare type UnsignedFloatToNum<TUnsignedFloat extends UnsignedFloat, TSign exte
 
 declare type UnsignedFloatZero = MakeUnsignedFloat<[0]>;
 
+/**
+ * Perform an XOR (exclusive OR) operation on two Bit literals.
+ *
+ * @param A - The first operand.
+ * @param B - The second operand.
+ * @returns Bit - (A xor B)
+ *
+ * @public
+ */
 export declare type Xor<A extends Bit, B extends Bit> = XorMap[A][B];
 
 declare type XorMap = TwoBitMap<[0, 1, 1, 0]>;

@@ -3,7 +3,7 @@ export type { Digit, DigitsPair, OrderedDigits, HeadDigitArray, TailDigitArray, 
 export type { DigitwiseAdditiveOp } from './DigitwiseAdditiveOp'
 export type { SplitIntoDigits } from './SplitIntoDigits'
 export type { UnsignedFloat, SignedFloat, SignedFloatZero, MakeSignedFloat, MakeUnsignedFloat, 
-    DigitsToUnsignedFloat, NegateSignedFloat, FloatDigitCount, FloatMaxDigitsAsUnsignedFloat, DivideMaxDigits,
+    DigitsToUnsignedFloat, SafeDigitsToUnsignedFloat, NegateSignedFloat, FloatDigitCount, FloatMaxDigitsAsUnsignedFloat, DivideMaxDigits,
     FloatMaxDigits, IsFloatPositive, IsFloatNegative, SignedFloatOne, SignedFloatFromInt, SignedFloatFromSignedInt } from './Float'
 export type { Normalise, NormaliseIntZeros, NormaliseIntPartLengths } from './Normalise'
 export type { IsIntEven, IsUnsignedFloatEven, IsSignedFloatEven, IsSignedIntEven } from './Parity'

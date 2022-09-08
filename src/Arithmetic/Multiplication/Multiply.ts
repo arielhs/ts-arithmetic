@@ -1,44 +1,39 @@
-import type { LeftPad, SomeElementExtends } from '../../util'
+import type { SomeElementExtends } from '../../util'
 import type { AdditiveOperationResult, OperationResult } from '../OperationTable'
 import type { MultiplicationTable } from './MultiplicationTable'
 import type { AdditionTable, AddUnsignedInts } from '../Addition'
-import type { Digit, DigitsPair, HeadDigitArray, SignedFloat, UnsignedFloat, DigitsToUnsignedFloat, NormaliseIntZeros } from '../Digit'
-import type { _Compare, MultiplySigns, Negate, RoundFloat, SignedFloatToNum, ToSignedFloat } from '../Number'
+import type { Digit, DigitsPair, HeadDigitArray, SignedFloat, UnsignedFloat, NormaliseIntZeros, SafeDigitsToUnsignedFloat } from '../Digit'
+import type { _Compare, MultiplySigns, Negate, SignedFloatToNum, ToSignedFloat } from '../Number'
 import type { NormaliseForCrossMultiply } from './Normalise'
 
-type MultiplyRow<X extends Digit[], B extends Digit, TCarryIn extends Digit = 0> = (
+type MultiplyRow<X extends Digit[], B extends Digit, TCarryIn extends Digit = 0, TFinalResult extends Digit[] = []> = (
     X extends HeadDigitArray<infer XHead, infer A>
-        ? MultiplicationTable[A][B] extends OperationResult<infer TCarryOut1, infer TResult1>
-            ? AdditionTable[TResult1][TCarryIn] extends AdditiveOperationResult<infer TCarryOut2, infer TFinalResult>
-                ? AdditionTable[TCarryOut1][TCarryOut2] extends AdditiveOperationResult<0, infer TFinalCarryOut>
-                    ? [
-                        ...MultiplyRow<XHead, B, TFinalCarryOut>,
-                        TFinalResult
-                    ]
+        ? MultiplicationTable[A][B] extends OperationResult<infer ATimesBCarryOut, infer ATimesB>
+            ? AdditionTable[ATimesB][TCarryIn] extends AdditiveOperationResult<infer TCarryOut2, infer TResult>
+                ? AdditionTable[ATimesBCarryOut][TCarryOut2] extends AdditiveOperationResult<0, infer TFinalCarryOut>
+                    ? MultiplyRow<XHead, B, TFinalCarryOut, [TResult, ...TFinalResult]>
                     : never
                 : never
             : never
-        : [TCarryIn]
+        : [TCarryIn, ...TFinalResult]
 )
 
-type CrossMultiply<X extends Digit[], Y extends Digit[], TShift extends 0[] = []> = (
+type CrossMultiply<X extends Digit[], Y extends Digit[], TShift extends 0[] = [], TPrevRowResult extends Digit[] = []> = (
     Y extends HeadDigitArray<infer YHead, infer B>
-        ? NormaliseIntZeros<
-            AddUnsignedInts<
-                [...MultiplyRow<X, B>, ...TShift],
-                CrossMultiply<X, YHead, [...TShift, 0]>
-            >
-            >
-        : []
+        ? CrossMultiply<X, YHead, [...TShift, 0], 
+                NormaliseIntZeros<
+                    AddUnsignedInts<
+                        TPrevRowResult,
+                        [...MultiplyRow<X, B>, ...TShift]
+                    >
+                >
+        >
+        : TPrevRowResult
 )
 
 type MultiplyUnsignedFloats<X extends UnsignedFloat, Y extends UnsignedFloat> = (
     NormaliseForCrossMultiply<X, Y> extends [...DigitsPair<infer TNormalisedX, infer TNormalisedY>, infer TDecimalPlaces extends number]
-        ? CrossMultiply<TNormalisedX, TNormalisedY> extends infer TResult extends Digit[]
-            ? _Compare<TResult['length'], TDecimalPlaces> extends -1
-                ? DigitsToUnsignedFloat<LeftPad<TResult, 0, TDecimalPlaces>, TDecimalPlaces>
-                : DigitsToUnsignedFloat<TResult, TDecimalPlaces>
-            : never
+        ? SafeDigitsToUnsignedFloat<CrossMultiply<TNormalisedX, TNormalisedY>, TDecimalPlaces>
         : never
 )
 
@@ -50,10 +45,17 @@ export type MultiplySignedFloats<X extends SignedFloat, Y extends SignedFloat> =
     : never
 )
 
-export type MultiplySignedFloatsAndRound<X extends SignedFloat, Y extends SignedFloat> = RoundFloat<MultiplySignedFloats<X, Y>>
-
 type MultiplyNumbers<X extends number, Y extends number> = SignedFloatToNum<MultiplySignedFloats<ToSignedFloat<X>, ToSignedFloat<Y>>>
 
+/**
+ * Multiply two numeric type literals.
+ * 
+ * @param X - The first operand.
+ * @param Y - The second operand.
+ * @returns X * Y
+ * 
+ * @public
+*/
 export type Multiply<X extends number, Y extends number> = (
     SomeElementExtends<[X, Y], never> extends 1 ? never
     : X extends 0 ? 0

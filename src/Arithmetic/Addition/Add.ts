@@ -11,7 +11,7 @@ export type AddUnsignedInts<X extends Digit[], Y extends Digit[]> = (
         : never
 )
 
-type DigitwiseAdd<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = DigitwiseAdditiveOp<AdditionTable, TNormalisedX, TNormalisedY, 0>
+type DigitwiseAdd<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = DigitwiseAdditiveOp<AdditionTable, TNormalisedX, TNormalisedY>
 
 export type AddUnsignedFloats<X extends UnsignedFloat, Y extends UnsignedFloat> = (
     Normalise<X, Y> extends [...DigitsPair<infer TNormalisedX, infer TNormalisedY>, infer TDecimalPlaces extends number]
@@ -44,7 +44,11 @@ type AddSignedFloats<X extends SignedFloat, Y extends SignedFloat> = (
 export type AddNumbers<X extends number, Y extends number> = SignedFloatToNum<AddSignedFloats<ToSignedFloat<X>, ToSignedFloat<Y>>>
 
 /**
- * Add two numeric type literals
+ * Add two numeric type literals.
+ * 
+ * @param X - The first operand.
+ * @param Y - The second operand.
+ * @returns X + Y
  * 
  * @public
 */

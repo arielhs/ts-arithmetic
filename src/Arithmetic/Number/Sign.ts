@@ -1,5 +1,13 @@
 import type { BitMap, Not } from '../Bit'
 
+/**
+ * Negate a numeric literal
+ * 
+ * @param N - The number to negate.
+ * @returns -N
+ * 
+ * @public
+*/
 export type Negate<N extends number> = (
     N extends 0 
         ? 0
@@ -10,9 +18,34 @@ export type Negate<N extends number> = (
                 : never
 )
 
-type Abs<N extends number> = `${N}` extends `-${infer M extends number}` ? M : N
+/**
+ * Get the absolute value of a numeric literal
+ * 
+ * @param N - The number to get the absolute value of.
+ * @returns N as a positive number.
+ * 
+ * @public
+*/
+export type Abs<N extends number> = `${N}` extends `-${infer M extends number}` ? M : N
 
+/**
+ * Check if a numeric literal is positive.
+ * 
+ * @param N - The number to check.
+ * @returns Bit (i.e. 1 if N is positive, 0 if N is negative).
+ * 
+ * @public
+*/
 export type IsPositive<N extends number> = `${N}` extends `-${number}` ? 0 : 1
+
+/**
+ * Check if a numeric literal is negative.
+ * 
+ * @param N - The number to check.
+ * @returns Bit (i.e. 1 if N is negative, 0 if N is positive).
+ * 
+ * @public
+*/
 export type IsNegative<N extends number> = Not<IsPositive<N>>
 
 type IsSignPositiveMap = SignMap<0, 1>
