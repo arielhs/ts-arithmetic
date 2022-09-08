@@ -35,7 +35,7 @@
 <h3 align="center">Type Level Arithmetic</h3>
 
   <p align="center">
-    A package of utility types to perform all the basic arithmetic operations, **without the usual limitations**
+    A package of utility types to perform all the basic arithmetic operations, <strong>without the usual limitations</strong>
     <br />
     <a href="https://github.com/arielhs/ts-arithmetic"><strong>Explore the docs »</strong></a>
     <br />
@@ -67,12 +67,14 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
+    <li>
+        <a href="#usage">Usage</a>
+        <ul>
+            <li><a href="#core">Core</a></li>
+        </ul>
+    </li>
+    <li><a href="#type-utility-reference">Type Utility Reference</a></li>
     <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -162,29 +164,145 @@ type ModExmaple = Mod<87, 7>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-## Complete Type Utility List
+# Type Utility Reference
 
-- Add
-- Subtract
-- Multiply
-- Divide
-- Pow
-- Compare
-- Mod
-- Negate
-- Abs
-- IsPositive
-- IsNegative
-- IsOdd
-- IsEven
-- IsInt
-- IsNotInt
-- And
-- Or
-- Xor
-- Not
+## Arithmetical Operations
+* [`Add`](#add)
+* [`Subtract`](#subtract)
+* [`Multiply`](#multiply)
+* [`Divide`](#divide)
+* [`Pow`](#pow)
+* [`Mod`](#mod)
+* [`Negate`](#negate)
+* [`Abs`](#abs)
 
+## Comparison Operations
+* [`Compare`](#compare)
+* [`Gt`](#gt)
+* [`Lt`](#lt)
+* [`Eq`](#eq)
+* [`GtOrEq`](#gtoreq)
+* [`LtOrEq`](#ltoreq)
+* [`Max`](#max)
+* [`Min`](#min)
 
+## Other Checks
+### Sign
+* [`IsPositive`](#ispositive)
+* [`IsNegative`](#isnegative)
+### Parity
+* [`IsOdd`](#isodd)
+* [`IsEven`](#iseven)
+### Number Type
+* [`IsInt`](#isint)
+* [`IsNotInt`](#isnotint)
+
+## Bit Operations
+* [`And`](#and)
+* [`Or`](#or)
+* [`Xor`](#xor)
+* [`Not`](#not)
+
+---
+
+## General Operation Semantics
+
+All of the operations behave pretty much how you would expect them to. They all accept positive/negative integers/fractions. There are a few things to note about `never`, `number` and unions of numeric literals.
+
+### never
+
+Passing `never` in for any parameter will always resolve to `never`.
+
+### Unions of numeric literals
+
+Every type operation will **distribute** over their parameters as though you called the operation once on each member of the provided union type. e.g.
+```ts
+type ThreeOrFour = Add<1, 2|3> // resolves to 3 | 4
+
+type NegFiveOrTen = Negate<5|-10> // reolves to -5 | 10
+```
+
+For operations that take 2 parameters, if a union type is provided for both parameters, then it will be as though you called the operation on each **combination** of members of the union types. e.g.
+```ts
+type CartesianAdd = Add<3|4, 10|20> // resolves to 13 | 23 | 14 | 24
+```
+
+### number
+
+Most of the time, passing `number` in for any parameter will resolve to `number` - though not always.
+
+The answer for any specific case can always be worked out if you think of `number` as meaning **the union of all numeric literals** i.e.
+
+```ts
+type number = ... | -1 | -0.999...9 | -0.999...8 | ... | 0 | 0.000...1 | 0.000...2 | ... | 1 | ...
+```
+
+For example, 0 * X = 0 **for all X**. So:
+```ts
+type Zero = Multiply<0, number> // resolves to 0
+```
+
+But for 1 + X, there is no meaningfull way to simplify down in the same way. So:
+```ts
+type Useless = Add<1, number> // resolves to number
+```
+
+### `Add`
+
+Add any two numeric literals. It works exactly how you expect it to - you can pass in negative values, fractions etc.
+
+```ts
+// 100
+type NormalExample = Add<75, 25>
+
+// -0.25
+type NegativeFractionsExample = Add<-1.5, 0.25>
+```
+
+### `Subtract`
+
+Perform a substraction operation on any two numeric literals. It works exactly how you expect it to - you can pass in negative values, fractions etc.
+
+```ts
+// 150
+type NormalExample = Subtract<200, 50>
+```
+
+### `Multiply`
+
+Multiply any two numeric literals. You can pass in negative values and fractions. 
+
+```ts
+// 150
+type NormalExample = Multiply<200, 50>
+```
+
+### `Divide`
+### `Pow`
+### `Mod`
+### `Negate`
+### `Abs`
+
+### `Compare`
+### `Gt`
+### `Lt`
+### `Eq`
+### `GtOrEq`
+### `LtOrEq`
+### `Max`
+### `Min`
+
+### `IsPositive`
+### `IsNegative`
+### `IsOdd`
+### `IsEven`
+### `IsInt`
+### `IsNotInt`
+
+### `And`
+### `Or`
+### `Xor`
+### `Not`
 
 See the [open issues](https://github.com/arielhs/ts-arithmetic/issues) for a full list of proposed features (and known issues).
 
@@ -219,7 +337,7 @@ Project Link: [https://github.com/arielhs/ts-arithmetic](https://github.com/arie
 [issues-shield]: https://img.shields.io/github/issues/arielhs/ts-arithmetic.svg?style=for-the-badge
 [issues-url]: https://github.com/arielhs/ts-arithmetic/issues
 [license-shield]: https://img.shields.io/github/license/arielhs/ts-arithmetic.svg?style=for-the-badge
-[license-url]: https://github.com/arielhs/ts-arithmetic/blob/master/LICENSE.txt
+[license-url]: https://github.com/arielhs/ts-arithmetic/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: /ts-arithmetic-screenshot.png

@@ -96,6 +96,8 @@ declare type _Compare<X extends number, Y extends number> = (SignDecisionBranch<
     };
 }>);
 
+declare type CompareDecisionBranch<X extends number, Y extends number, TMap extends _CompareMap> = TMap[Compare<X, Y>];
+
 declare type CompareDigits<A extends Digit, B extends Digit> = (A extends B ? 0 : _CompareDigits<A, B>);
 
 declare type _CompareDigits<A extends Digit, B extends Digit, TOrderedDigits extends Digit[] = OrderedDigits> = (TOrderedDigits extends HeadDigitArray<infer THeadDigits, infer TLastDigit> ? A extends TLastDigit ? 1 : B extends TLastDigit ? -1 : _CompareDigits<A, B, THeadDigits> : never);
@@ -107,6 +109,10 @@ declare type CompareIntMagnitudes<X extends Digit[], Y extends Digit[]> = (Norma
 declare type CompareLengths<A extends unknown[], B extends unknown[]> = (A['length'] extends B['length'] ? 0 : A['length'] extends 0 ? -1 : B['length'] extends 0 ? 1 : CompareLengths<Head<A>, Head<B>>);
 
 declare type CompareMagnitudes<TNormalisedX extends Digit[], TNormalisedY extends Digit[]> = (TNormalisedX extends TNormalisedY ? 0 : [TNormalisedX, TNormalisedY] extends [TailDigitArray<infer XFirst, infer XTail>, TailDigitArray<infer YFirst, infer YTail>] ? CompareDigits<XFirst, YFirst> extends 0 ? CompareMagnitudes<XTail, YTail> : CompareDigits<XFirst, YFirst> : never);
+
+declare type _CompareMap = {
+    [K in ComparisonResult]: unknown;
+};
 
 declare type CompareNumberMagnitudes<X extends number, Y extends number> = (SplitAndNormalise<X, Y> extends [...DigitsPair<infer TNormalisedX, infer TNormalisedY>, number] ? CompareMagnitudes<TNormalisedX, TNormalisedY> : never);
 
@@ -158,6 +164,17 @@ TDecimalPlaces
 
 declare type EmptryStringAsZero<S extends string> = S extends '' ? '0' : S;
 
+/**
+ * Perform an equality comparison on two numeric type literals.
+ *
+ * @param X - The number on the "left".
+ * @param Y - The number on the "right".
+ * @returns Bit - (1 if X \< Y, 0 if X \>= Y).
+ *
+ * @public
+ */
+export declare type Eq<X extends number, Y extends number> = (SomeElementExtends<[X, Y], never> extends 1 ? never : number extends (X | Y) ? Bit : X extends Y ? Y extends X ? 1 : 0 : 0);
+
 declare type EuclideanDivide<TNumerator extends Digit[], TDivisor extends Digit[]> = _EuclideanDivide<TDivisor, TNumerator, [0]>;
 
 declare type _EuclideanDivide<TDivisor extends Digit[], TRemainder extends Digit[], TQuotient extends Digit[]> = (CompareIntMagnitudes<TRemainder, TDivisor> extends (1 | 0) ? _EuclideanDivide<TDivisor, SubtractUnsignedInts<TRemainder, TDivisor>, AddUnsignedInts<TQuotient, [1]>> : MakeModResult<TRemainder, TQuotient>);
@@ -182,6 +199,36 @@ declare type FloatMaxDigitsAsUnsignedFloat = ToUnsignedFloat<FloatMaxDigits>;
 declare type FourBits = [Bit, Bit, Bit, Bit];
 
 declare type GetSign<N extends number> = BitMap<'-', '+'>[IsPositive<N>];
+
+/**
+ * Perform a 'greater than' comparison on two numeric type literals.
+ *
+ * @param X - The number on the "left".
+ * @param Y - The number on the "right".
+ * @returns Bit - (1 if X \> Y, 0 if X \<= Y).
+ *
+ * @public
+ */
+export declare type Gt<X extends number, Y extends number> = (CompareDecisionBranch<X, Y, {
+    [-1]: 0;
+    0: 0;
+    1: 1;
+}>);
+
+/**
+ * Perform a 'greater than or equal to' operation on two numeric type literals.
+ *
+ * @param X - The number on the "left".
+ * @param Y - The number on the "right".
+ * @returns Bit - (1 if X \>= Y, 0 if X \< Y).
+ *
+ * @public
+ */
+export declare type GtOrEq<X extends number, Y extends number> = (CompareDecisionBranch<X, Y, {
+    [-1]: 0;
+    0: 1;
+    1: 1;
+}>);
 
 declare type Head<A extends unknown[]> = A extends [...infer THead, unknown] ? THead : never;
 
@@ -267,6 +314,28 @@ declare type LongDivide<TDivisor extends Digit[], TNumeratorHead extends Digit[]
 
 declare type LongDivideFraction<TDivisor extends Digit[], TNumerator extends Digit[], TQuotient extends Digit[] = []> = (_Compare<TQuotient['length'], DivideMaxDigits> extends 1 ? TQuotient : EuclideanDivide<TNumerator, TDivisor> extends EuclideanDivideResult<infer TRemainder, infer TNextQuotientDigit> ? TRemainder extends [0] ? [...TQuotient, TNextQuotientDigit] : LongDivideFraction<TDivisor, [...TRemainder, 0], [...TQuotient, TNextQuotientDigit]> : never);
 
+/**
+ * Perform a 'less than' comparison on two numeric type literals.
+ *
+ * @param X - The number on the "left".
+ * @param Y - The number on the "right".
+ * @returns Bit - (1 if X \< Y, 0 if X \>= Y).
+ *
+ * @public
+ */
+export declare type Lt<X extends number, Y extends number> = Gt<Y, X>;
+
+/**
+ * Perform a 'less than or equal to' operation on two numeric type literals.
+ *
+ * @param X - The number on the "left".
+ * @param Y - The number on the "right".
+ * @returns Bit - (1 if X \<= Y, 0 if X \> Y).
+ *
+ * @public
+ */
+export declare type LtOrEq<X extends number, Y extends number> = GtOrEq<Y, X>;
+
 declare type MakeAdditionTable<T extends unknown[]> = (T['length'] extends 10 ? T : MakeAdditionTable<[...T, RotateLeftWithCarry<Last<T>>]>);
 
 declare type MakeFirstRow<A extends AdditiveOperationResult[]> = (A['length'] extends Digit ? MakeFirstRow<[...A, AdditiveOperationResult<0, A['length']>]> : A);
@@ -286,6 +355,28 @@ declare type MakeUnsignedFloat<TIntegerDigits extends Digit[], TFractionalDigits
 declare type MapToOperationResult<TRow extends number[]> = {
     [K in keyof TRow]: OperationResultFromNum<TRow[K]>;
 };
+
+/**
+ * Get the greatest of two numeric type literals.
+ *
+ * @param X - The first operand.
+ * @param Y - The second operand.
+ * @returns X|Y - (X if X \> Y, Y if Y \> X else X (since they would be equal)).
+ *
+ * @public
+ */
+export declare type Max<X extends number, Y extends number> = (X extends Y ? X : Y extends X ? Y : Gt<X, Y> extends 1 ? X : Y);
+
+/**
+ * Get the smallest of two numeric type literals.
+ *
+ * @param X - The first operand.
+ * @param Y - The second operand.
+ * @returns X|Y - (X if X \< Y, Y if Y \< X else X (since they would be equal)).
+ *
+ * @public
+ */
+export declare type Min<X extends number, Y extends number> = (X extends Y ? X : Y extends X ? Y : Lt<X, Y> extends 1 ? X : Y);
 
 /**
  * Mod two numeric type literals. This returns the remainder as per JavaScript's Remainder (%) operator.
