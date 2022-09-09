@@ -1,11 +1,6 @@
 <a name="readme-top"></a>
 
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -13,7 +8,7 @@
 <h3 align="center">Type Level Arithmetic</h3>
 
   <p align="center">
-    A package of utility types to perform all the basic arithmetic operations, <strong>without the usual limitations</strong>
+    A package of TypeScript utility types to perform all the basic arithmetic operations, <strong>at the Type Level</strong> without the usual limitations.
     <br />
     <a href="#type-utility-reference"><strong>Explore the docs »</strong></a>
     <br />

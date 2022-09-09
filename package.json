@@ -1,6 +1,6 @@
 {
   "name": "ts-arithmetic",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Type Level Arithmetic",
   "keywords": [
     "type arithmetic",
@@ -26,7 +26,7 @@
   "types": "dist/ts-arithmetic.d.ts",
   "author": "Ariel HS",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "tsc && api-extractor run --local --typescript-compiler-folder node_modules/typescript/lib",
     "tsc": "tsc"
