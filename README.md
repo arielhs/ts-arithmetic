@@ -73,7 +73,20 @@
             <li><a href="#core">Core</a></li>
         </ul>
     </li>
-    <li><a href="#type-utility-reference">Type Utility Reference</a></li>
+    <li>
+        <a href="#type-utility-reference">Type Utility Reference</a>
+        <ul>
+            <li>
+                <a href="#general-operation-semantics">General Operation Semantics</a>
+                <ul>
+                    <li><a href="#never">never</a></li>
+                    <li><a href="#unions-of-numeric-literals">Unions of numeric literals</a></li>
+                    <li><a href="#number">number</a></li>
+                    <li><a href="#scientific-notation">Scientific Notation</a></li>
+                </ul>
+            </li>
+        </ul>
+    </li>
     <li><a href="#license">License</a></li>
   </ol>
 </details>
@@ -207,7 +220,7 @@ type ModExmaple = Mod<87, 7>
 
 ## General Operation Semantics
 
-All of the operations behave pretty much how you would expect them to. They all accept positive/negative integers/fractions. There are a few things to note about `never`, `number` and unions of numeric literals.
+All of the operations behave pretty much how you would expect them to. They all accept positive/negative integers/fractions. There are a few things to note about `never`, `number`, unions of numeric literals and literals given in scientific notation (e.g. 8.5e-15)
 
 ### never
 
@@ -253,6 +266,23 @@ But for 1 + X, there is no meaningfull way to simplify down in the same way. So:
 ```ts
 type Useless = Add<1, number> // resolves to number
 ```
+
+### Scientific Notation
+
+Passing in a numeric literal `N` where `-1 < N < 1` in scientific notation e.g. `8.5e-10` will work just fine.
+
+However there is an issue with large numeric literals given in scientific notation e.g. `1e+21`. For `N` where `Abs(N) < 1e+21`, typescript will automatically resolve this to its expanded form (e.g. `100000000000000000000`) so everything will work as normal. But exceeding this limit will cause typescript to resolve the literal in scientific notation.
+```ts
+type Big1 = 1.0000001e+20 // typescript resolves this to 100000010000000000000
+type Big2 = 1e+20 // typescript resolves this to 100000000000000000000
+type BigSubtract = Subtract<Big1, Big2> // 10000000000000
+
+type TooBig1 = 1.0000001e+21 // typescript resolves this exactly as it appears, 1.0000001e+21
+type TooBig2 = 1e+21 // typescript resolves this exactly as it appears, 1e+21
+type TooBigSubtract = Subtract<TooBig1, TooBig2> // never
+```
+
+This notation can in be supported (and might in the future) but it currently is not.
 
 ### `Add`
 
