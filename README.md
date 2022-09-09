@@ -237,9 +237,16 @@ The answer for any specific case can always be worked out if you think of `numbe
 type number = ... | -1 | -0.999...9 | -0.999...8 | ... | 0 | 0.000...1 | 0.000...2 | ... | 1 | ...
 ```
 
+The type utilities will always return the most restrictive union of the results possible.
+
 For example, 0 * X = 0 **for all X**. So:
 ```ts
 type Zero = Multiply<0, number> // resolves to 0
+```
+
+Or for any of the types that already return some subset of `number`, then that entire subset will be returned. e.g.
+```ts
+type ZeroOrOne = IsPositive<number> // resolves to 0 | 1
 ```
 
 But for 1 + X, there is no meaningfull way to simplify down in the same way. So:
@@ -291,9 +298,9 @@ type AlsoZero = Multiply<0, number> // 0
 Divide a numeric literal by another. 
 
 ```ts
-type NormalExample = Divide<25, 25> // 625
+type NormalExample = Divide<25, 5> // 25
 
-type NegativeFractionsExample = Divide<-0.005, 20> // -0.1
+type NegativeFractionsExample = Divide<-0.005, 20> // -0.00025
 
 type UnionExample = Divide<100|50, 5> // 20 | 10
 
@@ -301,8 +308,8 @@ type NotPossible = Divide<10, 0> // never
 
 type AbsorbedNever = Divide<10, 2|0> // 5 | never --> 5
 
-// even though number "contains" 0, since Divide distibutes, the never is absorbed into the resulting union
-// just like the above example
+// even though number "contains" 0, since Divide distibutes, the never is
+// absorbed into the resulting union just like the above example
 type Zero = Divide<0, number> // 0
 ```
 
@@ -324,8 +331,8 @@ type NotPossible = Pow<0, -1> // never
 
 type AbsorbedNever = Pow<0, -1|5> // never | 0 --> 0
 
-// even though number "contains" negative values, since Pow distibutes, the never is absorbed into the resulting union
-// just like the above example
+// even though number "contains" negative values, since Pow distibutes, the never is
+// absorbed into the resulting union just like the above example
 type Zero = Pow<0, number> // 0
 
 type AndAlsoAlwaysOne = Pow<1, number> // 1
