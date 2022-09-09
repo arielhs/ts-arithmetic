@@ -1,5 +1,11 @@
 <a name="readme-top"></a>
 
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
 <div align="center">
 <h3 align="center">Type Level Arithmetic</h3>
 
@@ -650,9 +656,7 @@ Project Link: [https://github.com/arielhs/ts-arithmetic](https://github.com/arie
 [issues-shield]: https://img.shields.io/github/issues/arielhs/ts-arithmetic.svg?style=for-the-badge
 [issues-url]: https://github.com/arielhs/ts-arithmetic/issues
 [license-shield]: https://img.shields.io/github/license/arielhs/ts-arithmetic.svg?style=for-the-badge
-[license-url]: https://github.com/arielhs/ts-arithmetic/blob/main/LICENSE
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
+[license-url]: https://github.com/arielhs/ts-arithmetic/blob/main/LICENSE.txt
 [product-screenshot]: /ts-arithmetic-screenshot.png
 [TypeScript]: https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF&style=flat-square
 [typescript-url]: https://www.typescriptlang.org
