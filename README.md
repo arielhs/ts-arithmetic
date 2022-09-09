@@ -28,20 +28,14 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/arielhs/ts-arithmetic">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
 <h3 align="center">Type Level Arithmetic</h3>
 
   <p align="center">
     A package of utility types to perform all the basic arithmetic operations, <strong>without the usual limitations</strong>
     <br />
-    <a href="https://github.com/arielhs/ts-arithmetic"><strong>Explore the docs »</strong></a>
+    <a href="#type-utility-reference"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/arielhs/ts-arithmetic">View Demo</a>
-    ·
     <a href="https://github.com/arielhs/ts-arithmetic/issues">Report Bug</a>
     ·
     <a href="https://github.com/arielhs/ts-arithmetic/issues">Request Feature</a>
@@ -653,6 +647,10 @@ See the [open issues](https://github.com/arielhs/ts-arithmetic/issues) for a ful
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- ROADMAP -->
+## Roadmap
+
+- Support big numbers e.g. `8.5e+50`
 
 <!-- LICENSE -->
 ## License
@@ -660,8 +658,6 @@ See the [open issues](https://github.com/arielhs/ts-arithmetic/issues) for a ful
 Distributed under the MIT License. See `LICENSE` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
 
 <!-- CONTACT -->
 ## Contact
