@@ -6,7 +6,7 @@
  *
  * @public
  */
-export declare type Abs<N extends number> = `${N}` extends `-${infer M extends number}` ? M : N;
+export declare type Abs<N extends number> = (N extends N ? `${N}` extends `-${infer M extends number}` ? M : N : never);
 
 /**
  * Add two numeric type literals.
@@ -236,8 +236,6 @@ declare type HeadDigitArray<THead extends Digit[], TLast extends Digit> = [...TH
 
 declare type InferNum<S extends string, TSign extends Sign> = (S extends '0' ? 0 : `${SignStr<TSign>}${S}` extends `${infer N extends number}` ? N : never);
 
-declare type IntConstraint<N extends number> = IsInt<N> extends 1 ? number : never;
-
 /**
  * Checks if a numeric type literal is Even.
  *
@@ -246,7 +244,7 @@ declare type IntConstraint<N extends number> = IsInt<N> extends 1 ? number : nev
  *
  * @public
  */
-export declare type IsEven<N extends number> = IsUnsignedFloatEven<ToUnsignedFloat<N>>;
+export declare type IsEven<N extends number> = (number extends N ? Bit : N extends N ? IsUnsignedFloatEven<ToUnsignedFloat<N>> : never);
 
 /**
  * Checks if a numeric type literal is an Integer.
@@ -256,7 +254,7 @@ export declare type IsEven<N extends number> = IsUnsignedFloatEven<ToUnsignedFlo
  *
  * @public
  */
-export declare type IsInt<N extends number> = (`${N}` extends `${string}.${string}` ? 0 : 1);
+export declare type IsInt<N extends number> = (number extends N ? Bit : N extends N ? `${N}` extends `${string}.${string}` ? 0 : 1 : never);
 
 declare type IsIntEven<D extends Digit[]> = (D extends HeadDigitArray<any, infer TLastDigit> ? TLastDigit extends (0 | 2 | 4 | 6 | 8) ? 1 : 0 : never);
 
@@ -298,7 +296,7 @@ export declare type IsOdd<N extends number> = Not<IsEven<N>>;
  *
  * @public
  */
-export declare type IsPositive<N extends number> = `${N}` extends `-${number}` ? 0 : 1;
+export declare type IsPositive<N extends number> = (N extends N ? number extends N ? Bit : `${N}` extends `-${number}` ? 0 : 1 : never);
 
 declare type IsUnsignedFloatEven<F extends UnsignedFloat> = (F[1] extends [] ? IsIntEven<F[0]> : never);
 
@@ -365,7 +363,7 @@ declare type MapToOperationResult<TRow extends number[]> = {
  *
  * @public
  */
-export declare type Max<X extends number, Y extends number> = (X extends Y ? X : Y extends X ? Y : Gt<X, Y> extends 1 ? X : Y);
+export declare type Max<X extends number, Y extends number> = (number extends (X | Y) ? number : X extends Y ? X : Y extends X ? Y : Gt<X, Y> extends 1 ? X : Y);
 
 /**
  * Get the smallest of two numeric type literals.
@@ -376,7 +374,7 @@ export declare type Max<X extends number, Y extends number> = (X extends Y ? X :
  *
  * @public
  */
-export declare type Min<X extends number, Y extends number> = (X extends Y ? X : Y extends X ? Y : Lt<X, Y> extends 1 ? X : Y);
+export declare type Min<X extends number, Y extends number> = (number extends (X | Y) ? number : X extends Y ? X : Y extends X ? Y : Lt<X, Y> extends 1 ? X : Y);
 
 /**
  * Mod two numeric type literals. This returns the remainder as per JavaScript's Remainder (%) operator.
@@ -387,7 +385,7 @@ export declare type Min<X extends number, Y extends number> = (X extends Y ? X :
  *
  * @public
  */
-export declare type Mod<TNumerator extends number, TDivisor extends number> = (SomeElementExtends<[TNumerator, TDivisor], never> extends 1 ? never : TDivisor extends 0 ? never : TNumerator extends 0 ? 0 : TDivisor extends 1 ? 0 : number extends (TNumerator | TDivisor) ? number : ModNumbers<TNumerator, TDivisor>);
+export declare type Mod<TNumerator extends number, TDivisor extends number> = (SomeElementExtends<[TNumerator, TDivisor], never> extends 1 ? never : TDivisor extends 0 ? never : TNumerator extends 0 ? 0 : number extends (TNumerator | TDivisor) ? number : ModNumbers<TNumerator, TDivisor>);
 
 declare type ModNumbers<TNumerator extends number, TDivisor extends number> = SignedFloatToNum<ModSignedFloats<ToSignedFloat<TNumerator>, ToSignedFloat<TDivisor>>>;
 
@@ -431,7 +429,7 @@ declare type MultiplyUnsignedFloats<X extends UnsignedFloat, Y extends UnsignedF
  *
  * @public
  */
-export declare type Negate<N extends number> = (N extends 0 ? 0 : `${N}` extends `-${infer M extends number}` ? M : `-${N}` extends `${infer M extends number}` ? M : never);
+export declare type Negate<N extends number> = (N extends 0 ? 0 : number extends N ? number : `${N}` extends `-${infer M extends number}` ? M : `-${N}` extends `${infer M extends number}` ? M : never);
 
 declare type NegateSignedFloat<X extends SignedFloat> = (X extends SignedFloat<infer TSign, infer TUnsignedFloat> ? SignedFloat<FlipSign<TSign>, TUnsignedFloat> : never);
 
@@ -510,7 +508,9 @@ declare type PadDirection = 'L' | 'R';
  *
  * @public
  */
-export declare type Pow<X extends number, N extends IntConstraint<N>> = (SomeElementExtends<[X, N], never> extends 1 ? never : IsInt<N> extends 0 ? never : N extends 0 ? 1 : X extends 1 ? 1 : X extends 0 ? IsNegative<N> extends 1 ? never : number extends N ? never : 0 : number extends (X | N) ? number : Exponentiate<X, N>);
+export declare type Pow<X extends number, N extends number> = (SomeElementExtends<[X, N], never> extends 1 ? never : N extends 0 ? 1 : N extends 1 ? X : X extends 1 ? 1 : X extends -1 ? number extends N ? -1 | 1 : PowRejectingFractionalExponent<X, N> : X extends 0 ? IsNegative<N> extends 1 ? never : 0 : number extends (X | N) ? number : PowRejectingFractionalExponent<X, N>);
+
+declare type PowRejectingFractionalExponent<X extends number, N extends number> = (IsInt<N> extends 0 ? never : Exponentiate<X, N>);
 
 declare type Reject<A extends unknown[], T> = (A extends [infer H, ...infer R] ? [H] extends [T] ? Reject<R, T> : [H, ...Reject<R, T>] : []);
 

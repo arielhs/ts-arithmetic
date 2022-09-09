@@ -282,7 +282,7 @@ type TooBig2 = 1e+21 // typescript resolves this exactly as it appears, 1e+21
 type TooBigSubtract = Subtract<TooBig1, TooBig2> // never
 ```
 
-This notation can in be supported (and might in the future) but it currently is not.
+This notation can be supported (and might in the future) but it currently is not.
 
 ### `Add`
 
