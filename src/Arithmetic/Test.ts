@@ -170,6 +170,7 @@ type Tests = [
     Test<ApplyTest<Pow<0, 0>, 1>>,
     Test<ApplyTest<Pow<0, -2>, never>>,
 
+    Test<ApplyTest<Pow<4.5656, 1>, 4.5656>>,
     Test<ApplyTest<Pow<number, 1>, number>>,
     Test<ApplyTest<Pow<1, number>, 1>>,
     Test<ApplyTest<Pow<number, number>, number>>,
@@ -177,9 +178,25 @@ type Tests = [
     Test<ApplyTest<Pow<never, 1>, never>>,
     Test<ApplyTest<Pow<never, never>, never>>,
     Test<ApplyTest<Pow<number, 0>, 1>>,
-    Test<ApplyTest<Pow<0, number>, never>>,
+    Test<ApplyTest<Pow<0, number>, 0>>,
     Test<ApplyTest<Pow<0, never>, never>>,
     Test<ApplyTest<Pow<never, 0>, never>>,
+
+    Test<ApplyTest<Pow<0, 1.5>, 0>>,
+    Test<ApplyTest<Pow<1, 1.5>, 1>>,
+    Test<ApplyTest<Pow<2, 1.5>, never>>,
+    Test<ApplyTest<Pow<2, 1.5|2>, 4>>,
+    Test<ApplyTest<Pow<0|2, 1.5|2>, 0|4>>,
+    Test<ApplyTest<Pow<1|2, 1.5|2>, 1|4>>,
+    Test<ApplyTest<Pow<1|2, number>, number>>,
+    Test<ApplyTest<Pow<0|1, number>, 0|1>>,
+    Test<ApplyTest<Pow<0|1|2, number>, number>>,
+
+    Test<ApplyTest<Pow<-1, 3>, -1>>,
+    Test<ApplyTest<Pow<-1, 2|3>, -1|1>>,
+    Test<ApplyTest<Pow<-1, 0.5>, never>>,
+    Test<ApplyTest<Pow<-1, 2|3.5>, 1>>,
+    Test<ApplyTest<Pow<-1, number>, -1|1>>,
 
     Test<ApplyTest<Mod<10, 5>, 0>>,
     Test<ApplyTest<Mod<19, 7>, 5>>,
@@ -193,7 +210,7 @@ type Tests = [
     Test<ApplyTest<Mod<12345.6789, 0.555454>, 0.158296>>,
 
     Test<ApplyTest<Mod<2121, 0>, never>>,
-    Test<ApplyTest<Mod<number, 1>, 0>>,
+    Test<ApplyTest<Mod<number, 1>, number>>, // 0 for all ints, but would be a fraction
     Test<ApplyTest<Mod<number, 0>, never>>,
     Test<ApplyTest<Mod<number, number>, number>>,
     Test<ApplyTest<Mod<5, never>, never>>,

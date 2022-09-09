@@ -1,7 +1,7 @@
 import type { SomeElementExtends } from '../../util'
 import type { Divide } from '../Division'
 import type { Multiply } from '../Multiplication'
-import type { IntConstraint, IsEven, IsInt, IsNegative, Negate } from '../Number'
+import type { IsEven, IsInt, IsNegative, Negate } from '../Number'
 import type { Subtract } from '../Subtraction'
 
 type Exponentiate<X extends number, N extends number> = (
@@ -13,6 +13,12 @@ type Exponentiate<X extends number, N extends number> = (
         : never
 )
 
+type PowRejectingFractionalExponent<X extends number, N extends number> = (
+    IsInt<N> extends 0
+        ? never
+        : Exponentiate<X, N>
+)
+
 /**
  * Raise a numeric literal to the power of another.
  * 
@@ -22,17 +28,19 @@ type Exponentiate<X extends number, N extends number> = (
  * 
  * @public
 */
-export type Pow<X extends number, N extends IntConstraint<N>> = (
+export type Pow<X extends number, N extends number> = (
     SomeElementExtends<[X, N], never> extends 1 ? never
-    : IsInt<N> extends 0 ? never
     : N extends 0 ? 1
+    : N extends 1 ? X
     : X extends 1 ? 1
+    : X extends -1 
+        ? number extends N
+            ? -1 | 1
+            : PowRejectingFractionalExponent<X, N> // -1^0.5 = i --> never
     : X extends 0
         ? IsNegative<N> extends 1
             ? never
-            : number extends N
-                ? never
-                : 0
+            : 0
     : number extends (X | N) ? number
-    : Exponentiate<X, N>
+    : PowRejectingFractionalExponent<X, N> //  cant handle fractional exponent just yet
 )

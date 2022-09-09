@@ -5,5 +5,5 @@ export type { Compare, _Compare, CompareMap, CompareDecisionBranch } from './Com
 export type { IsOdd, IsEven } from './Parity'
 export type { ToUnsignedFloat, ToSignedFloat } from './ToFloat'
 export type { ToSignedInt } from './ToInt'
-export type { IsInt, IsNotInt, IntConstraint } from './IsInt'
+export type { IsInt, IsNotInt } from './IsInt'
 export type { Gt, Lt, Eq, GtOrEq, LtOrEq, Max, Min } from './Compare'

@@ -1,4 +1,4 @@
-import type { Not } from '../Bit'
+import type { Bit, Not } from '../Bit'
 import type { IsUnsignedFloatEven } from '../Digit'
 import type { ToUnsignedFloat } from './ToFloat'
 
@@ -10,7 +10,12 @@ import type { ToUnsignedFloat } from './ToFloat'
  * 
  * @public
 */
-export type IsEven<N extends number> = IsUnsignedFloatEven<ToUnsignedFloat<N>>
+export type IsEven<N extends number> = (
+    number extends N ? Bit
+    : N extends N ?
+        IsUnsignedFloatEven<ToUnsignedFloat<N>>
+    : never
+)
 
 /**
  * Checks if a numeric type literal is Odd.

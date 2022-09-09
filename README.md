@@ -249,60 +249,368 @@ type Useless = Add<1, number> // resolves to number
 
 ### `Add`
 
-Add any two numeric literals. It works exactly how you expect it to - you can pass in negative values, fractions etc.
+Add any two numeric literals. It works exactly how you expect it to.
 
 ```ts
-// 100
-type NormalExample = Add<75, 25>
+type NormalExample = Add<75, 25> // 100
 
-// -0.25
-type NegativeFractionsExample = Add<-1.5, 0.25>
+type NegativeFractionsExample = Add<-1.5, 0.25> // -0.25
+
+type UnionExample = Add<75|5, 25> // 100 | 30
 ```
 
 ### `Subtract`
 
-Perform a substraction operation on any two numeric literals. It works exactly how you expect it to - you can pass in negative values, fractions etc.
+Subtract a numeric literal from another.
 
 ```ts
-// 150
-type NormalExample = Subtract<200, 50>
+type NormalExample = Subtract<200, 50> // 150
+
+type NegativeFractionsExample = Subtract<-35.5, 1.75> // -37.25
+
+type UnionExample = Subtract<100|70, 20> // 80 | 50
 ```
 
 ### `Multiply`
 
-Multiply any two numeric literals. You can pass in negative values and fractions. 
+Multiply any two numeric literals.
 
 ```ts
-// 150
-type NormalExample = Multiply<200, 50>
+type NormalExample = Multiply<25, 25> // 625
+
+type NegativeFractionsExample = Multiply<-0.005, 20> // -0.1
+
+type UnionExample = Multiply<2|3, 4> // 8 | 12
+
+type Zero = Multiply<0, 21212> // 0
+
+type AlsoZero = Multiply<0, number> // 0
 ```
 
 ### `Divide`
+Divide a numeric literal by another. 
+
+```ts
+type NormalExample = Divide<25, 25> // 625
+
+type NegativeFractionsExample = Divide<-0.005, 20> // -0.1
+
+type UnionExample = Divide<100|50, 5> // 20 | 10
+
+type NotPossible = Divide<10, 0> // never
+
+type AbsorbedNever = Divide<10, 2|0> // 5 | never --> 5
+
+// even though number "contains" 0, since Divide distibutes, the never is absorbed into the resulting union
+// just like the above example
+type Zero = Divide<0, number> // 0
+```
+
 ### `Pow`
+Raise a numeric literal to an **integer** exponent. The limitation of integer exponents will be lifted soon.
+
+```ts
+type NormalExample = Pow<2, 10> // 1024
+
+type UnionExample = Pow<2|3, 10> // 1024 | 59049
+
+type ReciprocalExample = Pow<20.5, -2> // 0.002379535990481
+
+type AlwaysOne = Pow<10, 0> // 1
+
+type AlsoAlwaysOne = Pow<number, 0> // 1
+
+type NotPossible = Pow<0, -1> // never
+
+type AbsorbedNever = Pow<0, -1|5> // never | 0 --> 0
+
+// even though number "contains" negative values, since Pow distibutes, the never is absorbed into the resulting union
+// just like the above example
+type Zero = Pow<0, number> // 0
+
+type AndAlsoAlwaysOne = Pow<1, number> // 1
+
+type OneOrMinusOne = Pow<-1, 2|3> // 1 | -1
+
+type AlsoOneOrMinusOne = Pow<-1, number> // 1 | -1
+
+type Imaginary = Pow<-1, 0.5> // never
+
+type ZeroOrOne = Pow<0|1, number> // 0 | 1
+
+type AsExpected0 = Pow<0, 0.5> // 0
+type AsExpected1 = Pow<1, 0.5> // 1
+
+type NotAvailableYet = Pow<2, 0.5> // never
+
+type AbsorbedNotAvailableYetNever = Pow<2, 0.5|2> // never | 4 --> 4
+```
+
 ### `Mod`
+Perform a JavaScript remainder (%) operation on any two numeric literals.
+
+```ts
+type NormalExample = Mod<7, 2> // 1
+
+type UnionExample = Mod<20|19, 10> // 0 | 9
+
+type NegativeExample = Mod<-7, 2> // -1
+
+type FractionExample = Mod<19.99, 7.5> // 4.99
+
+type NotPossible = Mod<5, 0> // never
+
+type ZeroRemainder = Mod<20, 1> // 0
+
+type FractionRemainder = Mod<20.555, 1> // 0.555
+
+type AlwaysZero = Mod<0, 45> // 0
+
+type ReallyItsAlwaysZero = Mod<0, number> // 0
+
+type AbsorbedNever = Mod<10, 3|0> // 1 | never --> 1
+```
 ### `Negate`
+Negate a numeric literal.
+```ts
+type NormalExample = Negate<-12345> // 12345
+
+type UnionExample = Negate<-1 | 2> // 1 | -2
+
+type NumberExample = Negate<number> // number
+```
+
 ### `Abs`
+Get the absolute value of a numeric literal.
+```ts
+type NormalExample = Abs<-12345> // 12345
 
+type UnionExample = Abs<-1 | 2> // 1 | 2
+
+type NumberExample = Abs<number> // number
+```
 ### `Compare`
+Compare any two numeric literals. Returns -1 | 0 | 1 as per rules in Array.sort().
+
+For Compare<X, Y>
+
+* -1 --> X is less than Y
+* 0 --> X and Y are equal
+* 1 --> X is greater than Y
+
+```ts
+type NormalExample1 = Compare<5, 10> // -1
+type NormalExample2 = Compare<5, 5> // 0
+type NormalExample3 = Compare<10.1234, -5.111> // 1
+
+type UnionExample = Compare<5|10, 7> // -1 | 1
+
+type NumberExample = Compare<number, 7> // -1 | 0 | 1
+
+```
+
 ### `Gt`
+Perform a greater than comparison on any two numeric literals.
+
+* 1 --> X > Y
+* 0 --> X <= Y
+```ts
+type NormalExample1 = Gt<5, 10> // 0
+type NormalExample2 = Gt<5, 5> // 0
+type NormalExample3 = Gt<10.1234, -5.111> // 1
+
+type UnionExample = Gt<5|10, 7> // 0 | 1
+
+type NumberExample = Gt<number, 7> // 0 | 1
+
+```
 ### `Lt`
+Perform a less than comparison on any two numeric literals.
+
+* 1 --> X < Y
+* 0 --> X >= Y
+```ts
+type NormalExample1 = Lt<5, 10> // 1
+type NormalExample2 = Lt<5, 5> // 0
+type NormalExample3 = Lt<10.1234, -5.111> // 0
+
+type UnionExample = Lt<5|10, 7> // 0 | 1
+
+type NumberExample = Lt<number, 7> // 0 | 1
+
+```
 ### `Eq`
+Perform a equality comparison on any two numeric literals.
+
+* 1 --> X === Y
+* 0 --> X !== Y
+```ts
+type NormalExample1 = Eq<5, 10> // 0
+type NormalExample2 = Eq<5, 5> // 1
+
+type UnionExample = Eq<5|10, 10> // 0 | 1
+
+type NumberExample = Eq<number, 7> // 0 | 1
+
+```
 ### `GtOrEq`
+Perform a greater than or equal to comparison on any two numeric literals.
+
+* 1 --> X >= Y
+* 0 --> X < Y
+```ts
+type NormalExample1 = GtOrEq<5, 10> // 0
+type NormalExample2 = GtOrEq<5, 5> // 1
+type NormalExample3 = GtOrEq<10.1234, -5.111> // 1
+
+type UnionExample = GtOrEq<5|7|10, 7> // 0 | 1
+
+type NumberExample = GtOrEq<number, 7> // 0 | 1
+
+```
 ### `LtOrEq`
+Perform a less than or equal to comparison on any two numeric literals.
+
+* 1 --> X <= Y
+* 0 --> X > Y
+```ts
+type NormalExample1 = LtOrEq<5, 10> // 1
+type NormalExample2 = LtOrEq<5, 5> // 1
+type NormalExample3 = LtOrEq<10.1234, -5.111> // 0
+
+type UnionExample = LtOrEq<5|7|10, 7> // 0 | 1
+
+type NumberExample = LtOrEq<number, 7> // 0 | 1
+
+```
 ### `Max`
+Get the greatest of two numeric literals.
+```ts
+type NormalExample1 = Max<5, 10> // 10
+type NormalExample2 = Max<50, 5> // 50
+type NormalExample3 = Max<10.1234, -5.111> // 10.1234
+
+type UnionExample = Max<5|8|10, 7> // 7 | 8 | 10
+
+type NumberExample = Max<number, 7> // number
+
+```
 ### `Min`
+Get the smallest of two numeric literals.
+```ts
+type NormalExample1 = Min<5, 10> // 5
+type NormalExample2 = Min<50, 5> // 5
+type NormalExample3 = Min<10.1234, -5.111> // -5.111
 
+type UnionExample = Min<5|8|10, 7> // 5 | 7
+
+type NumberExample = Min<number, 7> // number
+
+```
 ### `IsPositive`
-### `IsNegative`
-### `IsOdd`
-### `IsEven`
-### `IsInt`
-### `IsNotInt`
+Check if a numeric literal is positive.
+```ts
+type NormalExample = IsPositive<-12345> // 0
 
+type UnionExample = IsPositive<-1 | 2> // 0 | 1
+
+type NumberExample = IsPositive<number> // 0 | 1
+
+```
+### `IsNegative`
+Check if a numeric literal is negative.
+```ts
+type NormalExample = IsNegative<-12345> // 1
+
+type UnionExample = IsNegative<-1 | 2> // 0 | 1
+
+type NumberExample = IsNegative<number> // 0 | 1
+
+```
+### `IsOdd`
+Check if a numeric literal is odd.
+```ts
+type NormalExample = IsOdd<123> // 1
+
+type FractionExample = IsOdd<3.5> // never
+
+type UnionExample = IsOdd<2 | 3> // 0 | 1
+
+type NumberExample = IsOdd<number> // 0 | 1
+
+```
+### `IsEven`
+Check if a numeric literal is even.
+```ts
+type NormalExample = IsEven<123> // 0
+
+type FractionExample = IsEven<3.5> // never
+
+type UnionExample = IsEven<2 | 3> // 0 | 1
+
+type NumberExample = IsEven<number> // 0 | 1
+
+```
+### `IsInt`
+Check if a numeric literal is an integer.
+```ts
+type NormalExample = IsInt<123> // 1
+
+type FractionExample = IsInt<3.5> // 0
+
+type UnionExample = IsInt<2 | 3.5> // 0 | 1
+
+type NumberExample = IsInt<number> // 0 | 1
+```
+### `IsNotInt`
+Check if a numeric literal is not an integer.
+```ts
+type NormalExample = IsNotInt<123> // 0
+
+type FractionExample = IsNotInt<3.5> // 1
+
+type UnionExample = IsNotInt<2 | 3.5> // 0 | 1
+
+type NumberExample = IsNotInt<number> // 0 | 1
+```
 ### `And`
+Perform an AND operation on two Bits.
+```ts
+type OneAndOne = And<1, 1> // 1
+type OneAndZero = And<1, 0> // 0
+type ZeroAndOne = And<0, 1> // 0
+type ZeroAndZero = And<0, 0> // 0
+
+type UnionExample = And<1 | 0, 1> // 0 | 1
+```
 ### `Or`
+Perform an OR operation on two Bits.
+```ts
+type OneOrOne = Or<1, 1> // 1
+type OneOrZero = Or<1, 0> // 1
+type ZeroOrOne = Or<0, 1> // 1
+type ZeroOrZero = Or<0, 0> // 0
+
+type UnionExample = Or<1 | 0, 1> // 1
+```
 ### `Xor`
+Perform an XOR operation on two Bits.
+```ts
+type OneXorOne = Xor<1, 1> // 0
+type OneXorZero = Xor<1, 0> // 1
+type ZeroXorOne = Xor<0, 1> // 1
+type ZeroXorZero = Xor<0, 0> // 0
+
+type UnionExample = Xor<1 | 0, 1> // 0 | 1
+```
 ### `Not`
+Perform an NOT operation on a Bit.
+```ts
+type NotZero = Not<0> // 1
+type NotOne = Not<1> // 0
+
+type UnionExample = Not<0 | 1> // 0 | 1
+```
 
 See the [open issues](https://github.com/arielhs/ts-arithmetic/issues) for a full list of proposed features (and known issues).
 

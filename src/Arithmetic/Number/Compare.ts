@@ -135,7 +135,8 @@ export type LtOrEq<X extends number, Y extends number> = GtOrEq<Y, X>
  * @public
 */
 export type Max<X extends number, Y extends number> = (
-    X extends Y ? X
+    number extends (X | Y) ? number
+    : X extends Y ? X
     : Y extends X ? Y
     : Gt<X, Y> extends 1 ? X : Y
 )
@@ -150,7 +151,8 @@ export type Max<X extends number, Y extends number> = (
  * @public
 */
 export type Min<X extends number, Y extends number> = (
-    X extends Y ? X
+    number extends (X | Y) ? number
+    : X extends Y ? X
     : Y extends X ? Y
     : Lt<X, Y> extends 1 ? X : Y
 )

@@ -39,7 +39,6 @@ export type Mod<TNumerator extends number, TDivisor extends number> = (
     SomeElementExtends<[TNumerator, TDivisor], never> extends 1 ? never
     : TDivisor extends 0 ? never
     : TNumerator extends 0 ? 0
-    : TDivisor extends 1 ? 0
     : number extends (TNumerator | TDivisor) ? number
     : ModNumbers<TNumerator, TDivisor>
 )

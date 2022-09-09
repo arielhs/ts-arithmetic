@@ -1,4 +1,4 @@
-import type { Not } from '../Bit'
+import type { Bit, Not } from '../Bit'
 
 /**
  * Checks if a numeric type literal is an Integer.
@@ -9,9 +9,12 @@ import type { Not } from '../Bit'
  * @public
 */
 export type IsInt<N extends number> = (
+    number extends N ? Bit
+    : N extends N ?
     `${N}` extends `${string}.${string}`
         ? 0
         : 1
+    : never
 )
 
 /**
@@ -23,5 +26,3 @@ export type IsInt<N extends number> = (
  * @public
 */
 export type IsNotInt<N extends number> = Not<IsInt<N>>
-
-export type IntConstraint<N extends number> = IsInt<N> extends 1 ? number : never

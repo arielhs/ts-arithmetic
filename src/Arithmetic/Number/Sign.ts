@@ -1,4 +1,4 @@
-import type { BitMap, Not } from '../Bit'
+import type { Bit, BitMap, Not } from '../Bit'
 
 /**
  * Negate a numeric literal
@@ -9,13 +9,11 @@ import type { BitMap, Not } from '../Bit'
  * @public
 */
 export type Negate<N extends number> = (
-    N extends 0 
-        ? 0
-        : `${N}` extends `-${infer M extends number}`
-            ? M
-            : `-${N}` extends `${infer M extends number}`
-                ? M
-                : never
+    N extends 0 ? 0
+    : number extends N ? number
+    : `${N}` extends `-${infer M extends number}` ? M
+    : `-${N}` extends `${infer M extends number}` ? M
+    : never
 )
 
 /**
@@ -26,7 +24,11 @@ export type Negate<N extends number> = (
  * 
  * @public
 */
-export type Abs<N extends number> = `${N}` extends `-${infer M extends number}` ? M : N
+export type Abs<N extends number> = (
+    N extends N ?
+        `${N}` extends `-${infer M extends number}` ? M : N
+    : never
+)
 
 /**
  * Check if a numeric literal is positive.
@@ -36,7 +38,12 @@ export type Abs<N extends number> = `${N}` extends `-${infer M extends number}` 
  * 
  * @public
 */
-export type IsPositive<N extends number> = `${N}` extends `-${number}` ? 0 : 1
+export type IsPositive<N extends number> = (
+    N extends N ?
+        number extends N ? Bit 
+        : `${N}` extends `-${number}` ? 0 : 1
+    : never
+)
 
 /**
  * Check if a numeric literal is negative.
