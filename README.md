@@ -1,14 +1,10 @@
 <a name="readme-top"></a>
 
-[![Issues][issues-shield]][issues-url]
-
-<!-- PROJECT LOGO -->
-<br />
 <div align="center">
 <h3 align="center">Type Level Arithmetic</h3>
 
   <p align="center">
-    A package of TypeScript utility types to perform all the basic arithmetic operations, <strong>at the Type Level</strong> without the usual limitations.
+    A package of TypeScript utility types to perform all the basic arithmetic operations <strong>at the Type Level</strong>, without the usual limitations.
     <br />
     <a href="#type-utility-reference"><strong>Explore the docs »</strong></a>
     <br />
