@@ -171,6 +171,11 @@ type ModExmaple = Mod<87, 7>
 * [`Max`](#max)
 * [`Min`](#min)
 
+## Rounding Operations
+- [`Round`](#round)
+- [`Floor`](#floor)
+- [`Ceil`](#ceil)
+
 ## Other Checks
 ### Sign
 * [`IsPositive`](#ispositive)
@@ -514,7 +519,45 @@ type NormalExample3 = Min<10.1234, -5.111> // -5.111
 type UnionExample = Min<5|8|10, 7> // 5 | 7
 
 type NumberExample = Min<number, 7> // number
+```
+### `Round`
+Round the number to the nearest integer, rounding up if it equidistant.
+```ts
+type PositiveExample1 = Round<13> // 13
+type PositiveExample2 = Round<13.47> // 13
+type PositiveExample3 = Round<13.50> // 14
+type PositiveExample4 = Round<13.85> // 14
 
+type NegativeExample1 = Round<-8.21> // -8
+type NegativeExample2 = Round<-8.50> // -8
+type NegativeExample3 = Round<-8.94> // -9
+```
+### `Floor`
+Round the number to the closest integer less than or equal to the given number.
+```ts
+type PositiveExample1 = Floor<3> // 3
+type PositiveExample2 = Floor<3.31> // 3
+type PositiveExample3 = Floor<3.50> // 3
+type PositiveExample4 = Floor<3.99> // 3
+
+type NegativeExample1 = Floor<-6> // -6
+type NegativeExample2 = Floor<-6.50> // -7
+type NegativeExample3 = Floor<-6.92> // -7
+type NegativeExample4 = Floor<-7.11> // -8
+
+```
+### `Ceil`
+Round the number to the closest integer greater than or equal to the given number.
+```ts
+type PositiveExample1 = Ceil<70> // 70
+type PositiveExample2 = Ceil<70.12> // 71
+type PositiveExample3 = Ceil<70.50> // 71
+type PositiveExample4 = Ceil<70.88> // 71
+
+type NegativeExample1 = Ceil<-8> // -8
+type NegativeExample2 = Ceil<-8.21> // -8
+type NegativeExample3 = Ceil<-8.50> // -8
+type NegativeExample4 = Ceil<-8.94> // -8
 ```
 ### `IsPositive`
 Check if a numeric literal is positive.
